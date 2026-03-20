@@ -24,8 +24,50 @@
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
       </button>
-      <a routerLink="/login" class="navbar__btn navbar__btn--ghost">Ingresar</a>
-      <a routerLink="/registro" class="navbar__btn navbar__btn--primary">Registro</a>
+
+      @if (currentUser()) {
+        <!-- User avatar + dropdown -->
+        <div class="navbar__user">
+          <button class="navbar__avatar" (click)="toggleDropdown()" [attr.aria-label]="'Menú de ' + currentUser()!.name">
+            {{ initials }}
+          </button>
+          @if (dropdownOpen()) {
+            <div class="navbar__dropdown">
+              <div class="navbar__dropdown-header">
+                <div class="navbar__dropdown-avatar">{{ initials }}</div>
+                <div class="navbar__dropdown-info">
+                  <p class="navbar__dropdown-name">{{ currentUser()!.name }} {{ currentUser()!.surname }}</p>
+                  <p class="navbar__dropdown-email">{{ currentUser()!.email }}</p>
+                </div>
+              </div>
+              <div class="navbar__dropdown-divider"></div>
+              <a routerLink="/mis-tickets" class="navbar__dropdown-item" (click)="dropdownOpen.set(false)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7a2 2 0 0 1 2-2z"/>
+                </svg>
+                Mis Tickets
+              </a>
+              <a routerLink="/mis-datos" class="navbar__dropdown-item" (click)="dropdownOpen.set(false)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                Mis Datos
+              </a>
+              <div class="navbar__dropdown-divider"></div>
+              <button class="navbar__dropdown-item navbar__dropdown-item--logout" (click)="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <a routerLink="/login" class="navbar__btn navbar__btn--ghost">Ingresar</a>
+        <a routerLink="/registro" class="navbar__btn navbar__btn--primary">Registro</a>
+      }
+
       <button class="navbar__hamburger" (click)="toggleMenu()" aria-label="Menú">
         @if (menuOpen()) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -65,10 +107,25 @@
       <a class="navbar__mobile-link" (click)="toggleMenu()">Teatro</a>
       <a class="navbar__mobile-link" (click)="toggleMenu()">Deportes</a>
       <a class="navbar__mobile-link" (click)="toggleMenu()">Stand Up</a>
-      <div class="navbar__mobile-auth">
-        <a routerLink="/login" class="navbar__btn navbar__btn--ghost" (click)="toggleMenu()">Ingresar</a>
-        <a routerLink="/registro" class="navbar__btn navbar__btn--primary" (click)="toggleMenu()">Registro</a>
-      </div>
+      @if (currentUser()) {
+        <div class="navbar__mobile-user">
+          <div class="navbar__mobile-user-info">
+            <div class="navbar__avatar navbar__avatar--sm">{{ initials }}</div>
+            <div>
+              <p class="navbar__mobile-name">{{ currentUser()!.name }} {{ currentUser()!.surname }}</p>
+              <p class="navbar__mobile-email">{{ currentUser()!.email }}</p>
+            </div>
+          </div>
+          <a routerLink="/mis-tickets" class="navbar__mobile-link" (click)="toggleMenu()">Mis Tickets</a>
+          <a routerLink="/mis-datos" class="navbar__mobile-link" (click)="toggleMenu()">Mis Datos</a>
+          <button class="navbar__mobile-link navbar__mobile-link--logout" (click)="logout(); toggleMenu()">Cerrar sesión</button>
+        </div>
+      } @else {
+        <div class="navbar__mobile-auth">
+          <a routerLink="/login" class="navbar__btn navbar__btn--ghost" (click)="toggleMenu()">Ingresar</a>
+          <a routerLink="/registro" class="navbar__btn navbar__btn--primary" (click)="toggleMenu()">Registro</a>
+        </div>
+      }
     </div>
   }
 </header>

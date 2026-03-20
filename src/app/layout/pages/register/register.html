@@ -96,9 +96,75 @@
           }
         </div>
 
-        <div class="field">
-          <label for="phone">Teléfono <span class="optional">(opcional)</span></label>
-          <input id="phone" type="tel" formControlName="phone" placeholder="+54 9 11 1234-5678" autocomplete="tel"/>
+        <div class="form-row">
+          <div class="field" [class.field--error]="isInvalid('identificationType')">
+            <label for="identificationType">Tipo de documento</label>
+            <select id="identificationType" formControlName="identificationType">
+              <option value="" disabled>Seleccioná</option>
+              <option value="DNI">DNI</option>
+              <option value="PASSPORT">Pasaporte</option>
+              <option value="CUIL">CUIL</option>
+              <option value="CUIT">CUIT</option>
+            </select>
+            @if (isInvalid('identificationType')) {
+              <span class="field__error">Seleccioná un tipo de documento</span>
+            }
+          </div>
+          <div class="field" [class.field--error]="isInvalid('identificationValue')">
+            <label for="identificationValue">Número de documento</label>
+            <input id="identificationValue" type="text" formControlName="identificationValue" placeholder="12345678"/>
+            @if (isInvalid('identificationValue')) {
+              <span class="field__error">Ingresá tu número de documento</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field" [class.field--error]="isInvalid('phone')">
+            <label for="phone">Teléfono</label>
+            <input id="phone" type="tel" formControlName="phone" placeholder="+54 9 11 1234-5678" autocomplete="tel"/>
+            @if (isInvalid('phone')) {
+              <span class="field__error">Ingresá un teléfono válido</span>
+            }
+          </div>
+          <div class="field" [class.field--error]="isInvalid('dateOfBirth')">
+            <label for="dateOfBirth">Fecha de nacimiento</label>
+            <input id="dateOfBirth" type="date" formControlName="dateOfBirth"/>
+            @if (isInvalid('dateOfBirth')) {
+              <span class="field__error">Ingresá tu fecha de nacimiento</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field" [class.field--error]="isInvalid('gender')">
+            <label for="gender">Género</label>
+            <select id="gender" formControlName="gender">
+              <option value="" disabled>Seleccioná</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="No binario">No binario</option>
+              <option value="Prefiero no decir">Prefiero no decir</option>
+            </select>
+            @if (isInvalid('gender')) {
+              <span class="field__error">Seleccioná una opción</span>
+            }
+          </div>
+          <div class="field" [class.field--error]="isInvalid('country')">
+            <label for="country">País</label>
+            <input id="country" type="text" formControlName="country" placeholder="Argentina"/>
+            @if (isInvalid('country')) {
+              <span class="field__error">Ingresá tu país</span>
+            }
+          </div>
+        </div>
+
+        <div class="field" [class.field--error]="isInvalid('province')">
+          <label for="province">Provincia / Estado</label>
+          <input id="province" type="text" formControlName="province" placeholder="Buenos Aires"/>
+          @if (isInvalid('province')) {
+            <span class="field__error">Ingresá tu provincia o estado</span>
+          }
         </div>
 
         <div class="field" [class.field--error]="isInvalid('password')">
@@ -161,6 +227,10 @@
             <span class="field__error">Debes aceptar los términos para continuar</span>
           }
         </div>
+
+        @if (errorMessage()) {
+          <p class="form-error">{{ errorMessage() }}</p>
+        }
 
         <button type="submit" class="btn-submit" [class.btn-submit--loading]="isLoading()" [disabled]="isLoading()">
           @if (isLoading()) {

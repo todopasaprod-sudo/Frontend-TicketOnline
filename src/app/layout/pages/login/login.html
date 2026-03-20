@@ -130,6 +130,10 @@
           </label>
         </div>
 
+        @if (errorMessage()) {
+          <p class="form-error">{{ errorMessage() }}</p>
+        }
+
         <button type="submit" class="btn-submit"
                 [class.btn-submit--loading]="isLoading()"
                 [disabled]="isLoading()">

@@ -18,6 +18,16 @@
     </div>
   </div>
 
+  <!-- Error toast -->
+  @if (errorMessage()) {
+    <div class="toast toast--error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ errorMessage() }}
+    </div>
+  }
+
   <!-- Success toast -->
   @if (saveSuccess()) {
     <div class="toast toast--success">
@@ -55,6 +65,15 @@
           <label for="description">Descripción</label>
           <textarea id="description" formControlName="description" rows="3"
                     placeholder="Describí tu evento, artistas, propuesta..."></textarea>
+        </div>
+
+        <div class="field" [class.field--error]="isInvalid('organizerName')">
+          <label for="organizerName">Nombre del organizador <span class="required">*</span></label>
+          <input id="organizerName" type="text" formControlName="organizerName"
+                 placeholder="Ej: Rock Events S.A."/>
+          @if (isInvalid('organizerName')) {
+            <span class="field__error">Ingresá el nombre del organizador.</span>
+          }
         </div>
 
         <div class="field" [class.field--error]="isInvalid('category')">
@@ -117,10 +136,13 @@
               <span class="field__error">Seleccioná una ciudad.</span>
             }
           </div>
-          <div class="field">
-            <label for="address">Dirección</label>
+          <div class="field" [class.field--error]="isInvalid('address')">
+            <label for="address">Dirección <span class="required">*</span></label>
             <input id="address" type="text" formControlName="address"
                    placeholder="Av. del Libertador 4101"/>
+            @if (isInvalid('address')) {
+              <span class="field__error">Ingresá la dirección del evento.</span>
+            }
           </div>
         </div>
       </section>

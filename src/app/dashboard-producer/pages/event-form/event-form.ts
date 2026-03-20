@@ -1,8 +1,9 @@
 import { Component, signal, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { EventCard, EventData } from '../../../layout/components/event-card/event-card';
-import { DASHBOARD_EVENTS, GRADIENTS } from '../../data/dashboard-events';
+import { GRADIENTS } from '../../data/dashboard-events';
+import { EventService, CreateEventDto } from '../../../core/events/event.service';
 
 @Component({
   selector: 'app-event-form',
@@ -13,13 +14,16 @@ import { DASHBOARD_EVENTS, GRADIENTS } from '../../data/dashboard-events';
 export class EventForm {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private eventService = inject(EventService);
 
   gradients = GRADIENTS;
   selectedGradient = signal(GRADIENTS[0].value);
   isEditing = false;
-  editingId: number | null = null;
+  editingId: string | null = null;
   isLoading = signal(false);
   saveSuccess = signal(false);
+  errorMessage = signal<string | null>(null);
 
   categories = ['Música', 'Teatro', 'Deportes', 'Stand Up', 'Arte', 'Gastronomía', 'Infantil', 'Cine'];
   cities = [
@@ -31,21 +35,21 @@ export class EventForm {
 
   constructor() {
     this.form = this.fb.group({
-      title:       ['', [Validators.required, Validators.minLength(5)]],
-      description: [''],
-      category:    ['', Validators.required],
-      date:        ['', Validators.required],
-      time:        ['', Validators.required],
-      venue:       ['', Validators.required],
-      city:        ['', Validators.required],
-      address:     [''],
-      ticketType:  ['paid'],
-      price:       [null, [Validators.required, Validators.min(1)]],
-      capacity:    [null, [Validators.required, Validators.min(1)]],
-      status:      ['borrador'],
+      title:         ['', [Validators.required, Validators.minLength(5)]],
+      description:   [''],
+      category:      ['', Validators.required],
+      date:          ['', Validators.required],
+      time:          ['', Validators.required],
+      venue:         ['', Validators.required],
+      city:          ['', Validators.required],
+      address:       ['', Validators.required],
+      organizerName: ['', Validators.required],
+      ticketType:    ['paid'],
+      price:         [null, [Validators.required, Validators.min(1)]],
+      capacity:      [null, [Validators.required, Validators.min(1)]],
+      status:        ['borrador'],
     });
 
-    // Validación condicional del precio
     this.form.get('ticketType')!.valueChanges.subscribe(type => {
       const priceCtrl = this.form.get('price')!;
       if (type === 'paid') {
@@ -57,34 +61,38 @@ export class EventForm {
       priceCtrl.updateValueAndValidity();
     });
 
-    // Modo edición
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditing = true;
-      this.editingId = +id;
-      const event = DASHBOARD_EVENTS.find(e => e.id === +id);
-      if (event) {
-        this.form.patchValue({
-          title:      event.title,
-          category:   event.category,
-          date:       event.formDate,
-          time:       event.time.replace(' hs', ''),
-          venue:      event.venue,
-          city:       event.city,
-          ticketType: event.price === null ? 'free' : 'paid',
-          price:      event.price,
-          capacity:   event.ticketsTotal,
-          status:     event.status === 'borrador' ? 'borrador' : 'publicado',
-        });
-        this.selectedGradient.set(event.gradient);
-      }
+      this.editingId = id;
+      this.eventService.getById(id).subscribe({
+        next: (evt) => {
+          this.form.patchValue({
+            title:         evt.name,
+            description:   evt.description ?? '',
+            category:      evt.category ?? '',
+            date:          evt.date,
+            time:          evt.time.substring(0, 5),
+            venue:         evt.venue,
+            city:          evt.city,
+            address:       evt.address,
+            organizerName: evt.organizerName,
+            ticketType:    evt.price == null ? 'free' : 'paid',
+            price:         evt.price,
+            capacity:      evt.capacity,
+            status:        evt.status === 'Published' ? 'publicado' : 'borrador',
+          });
+          if (evt.imageUrl) this.selectedGradient.set(evt.imageUrl);
+        },
+        error: () => this.errorMessage.set('No se pudo cargar el evento.'),
+      });
     }
   }
 
   get previewEvent(): EventData {
     const v = this.form.value;
     return {
-      id:       this.editingId ?? 0,
+      id:       0,
       title:    v.title    || 'Título del evento',
       category: v.category || 'Categoría',
       date:     this.formatDateForDisplay(v.date || ''),
@@ -123,16 +131,63 @@ export class EventForm {
     this.save();
   }
 
+  private buildDto(): CreateEventDto {
+    const v = this.form.value;
+    return {
+      name:          v.title.trim(),
+      description:   v.description?.trim() || undefined,
+      date:          v.date,
+      time:          v.time + ':00',
+      venue:         v.venue.trim(),
+      address:       v.address.trim(),
+      city:          v.city,
+      organizerName: v.organizerName.trim(),
+      imageUrl:      this.selectedGradient(),
+      category:      v.category || undefined,
+      price:         v.ticketType === 'paid' ? Number(v.price) : undefined,
+      capacity:      v.capacity ? Number(v.capacity) : undefined,
+    };
+  }
+
   private save() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
+
     this.isLoading.set(true);
+    this.errorMessage.set(null);
+    const dto = this.buildDto();
+    const publish = this.form.get('status')!.value === 'publicado';
+
+    const request$ = this.isEditing && this.editingId
+      ? this.eventService.update(this.editingId, dto)
+      : this.eventService.create(dto);
+
+    request$.subscribe({
+      next: (evt) => {
+        if (publish && !this.isEditing) {
+          this.eventService.publish(evt.id).subscribe({
+            next: () => this.onSaveSuccess(),
+            error: () => this.onSaveSuccess(), // creado igual, solo falló el publish
+          });
+        } else {
+          this.onSaveSuccess();
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(err?.error?.message ?? 'Error al guardar el evento.');
+      },
+    });
+  }
+
+  private onSaveSuccess() {
+    this.isLoading.set(false);
+    this.saveSuccess.set(true);
     setTimeout(() => {
-      this.isLoading.set(false);
-      this.saveSuccess.set(true);
-      setTimeout(() => this.saveSuccess.set(false), 3500);
-    }, 1400);
+      this.saveSuccess.set(false);
+      this.router.navigate(['../'], { relativeTo: this.route });
+    }, 2000);
   }
 }

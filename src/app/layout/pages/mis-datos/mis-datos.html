@@ -1,0 +1,150 @@
+<app-navbar />
+<div class="mis-datos">
+  <div class="mis-datos__container">
+    
+    <div class="mis-datos__header">
+      <h1 class="mis-datos__title">Mis Datos</h1>
+      <p class="mis-datos__subtitle">Información de tu cuenta</p>
+    </div>
+
+    @if (loading()) {
+      <div class="mis-datos__skeleton">
+        <div class="skeleton-block skeleton-block--wide"></div>
+        <div class="skeleton-row">
+          <div class="skeleton-block"></div>
+          <div class="skeleton-block"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="skeleton-block"></div>
+          <div class="skeleton-block"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="skeleton-block"></div>
+          <div class="skeleton-block"></div>
+        </div>
+      </div>
+    } @else if (profile()) {
+
+      <!-- Account summary card -->
+      <div class="mis-datos__account-card">
+        <div class="account-avatar">
+          {{ (profile()!.name[0] + profile()!.surname[0]) | uppercase }}
+        </div>
+        <div class="account-info">
+          <p class="account-info__name">{{ profile()!.name }} {{ profile()!.surname }}</p>
+          <p class="account-info__email">{{ profile()!.email }}</p>
+          <div class="account-info__meta">
+            <span class="badge">{{ profile()!.role }}</span>
+            <span class="account-info__since">Miembro desde {{ memberSince() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Single form — all fields same design, only phoneNumber and gender are editable -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="mis-datos__form">
+
+        <div class="form-row">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" [value]="profile()!.name" readonly/>
+          </div>
+          <div class="field">
+            <label>Apellido</label>
+            <input type="text" [value]="profile()!.surname" readonly/>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" [value]="profile()!.email" readonly/>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Tipo de documento</label>
+            <input type="text" [value]="profile()!.identificationType" readonly/>
+          </div>
+          <div class="field">
+            <label>Número de documento</label>
+            <input type="text" [value]="profile()!.identificationValue" readonly/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Fecha de nacimiento</label>
+            <input type="text" [value]="formattedDateOfBirth" readonly/>
+          </div>
+          <div class="field">
+            <label>País</label>
+            <input type="text" [value]="profile()!.country" readonly/>
+          </div>
+        </div>
+
+        <div class="field field--editable" [class.field--error]="isInvalid('province')">
+          <label for="province">
+            Provincia / Estado
+            <span class="editable-tag">editable</span>
+          </label>
+          <input id="province" type="text" formControlName="province"/>
+          @if (isInvalid('province')) {
+            <span class="field__error">Ingresá tu provincia o estado</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="field field--editable" [class.field--error]="isInvalid('phoneNumber')">
+            <label for="phoneNumber">
+              Teléfono
+              <span class="editable-tag">editable</span>
+            </label>
+            <input id="phoneNumber" type="tel" formControlName="phoneNumber" autocomplete="tel"/>
+            @if (isInvalid('phoneNumber')) {
+              <span class="field__error">Ingresá un teléfono válido</span>
+            }
+          </div>
+
+          <div class="field field--editable" [class.field--error]="isInvalid('gender')">
+            <label for="gender">
+              Género
+              <span class="editable-tag">editable</span>
+            </label>
+            <select id="gender" formControlName="gender">
+              <option value="" disabled>Seleccioná</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="No binario">No binario</option>
+              <option value="Prefiero no decir">Prefiero no decir</option>
+            </select>
+            @if (isInvalid('gender')) {
+              <span class="field__error">Seleccioná una opción</span>
+            }
+          </div>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="form-alert form-alert--error">{{ errorMessage() }}</div>
+        }
+        @if (successMessage()) {
+          <div class="form-alert form-alert--success">{{ successMessage() }}</div>
+        }
+
+        <div class="mis-datos__actions">
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <span class="spinner"></span>
+              Guardando...
+            } @else {
+              Guardar cambios
+            }
+          </button>
+        </div>
+
+      </form>
+
+    } @else if (errorMessage()) {
+      <div class="form-alert form-alert--error">{{ errorMessage() }}</div>
+    }
+
+  </div>
+</div>

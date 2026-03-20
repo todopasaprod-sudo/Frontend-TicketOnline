@@ -409,6 +409,19 @@
 }
 
 // ===========================
+// Form-level error
+// ===========================
+.form-error {
+  font-size: 0.85rem;
+  color: $red;
+  background: rgba($red, 0.08);
+  border: 1px solid rgba($red, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 1rem;
+}
+
+// ===========================
 // Links
 // ===========================
 .link {
