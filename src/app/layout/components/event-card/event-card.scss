@@ -13,7 +13,7 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
-    border-color: rgba(168, 85, 247, 0.45);
+    border-color: rgba($purple,0.45);
   }
 
   // Gradient image area
@@ -141,7 +141,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    border-top: 1px solid rgba(168, 85, 247, 0.1);
+    border-top: 1px solid rgba($purple,0.1);
     padding-top: 0.75rem;
   }
 
@@ -151,7 +151,7 @@
     color: $text-main;
 
     &--free {
-      color: #34d399;
+      color: $green;
     }
   }
 
@@ -166,12 +166,12 @@
     font-family: inherit;
     cursor: pointer;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(168,85,247,0.25);
+    box-shadow: 0 2px 8px rgba($purple,0.25);
     transition: opacity 0.2s, box-shadow 0.2s;
 
     &:hover:not(:disabled) {
       opacity: 0.9;
-      box-shadow: 0 4px 14px rgba(168,85,247,0.4);
+      box-shadow: 0 4px 14px rgba($purple,0.4);
     }
 
     &:disabled {

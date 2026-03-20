@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #1e0a3c 0%, #3b0764 50%, #1e0a3c 100%);
+  background: linear-gradient(145deg, $brand-dark 0%, $brand-mid 50%, $brand-dark 100%);
   overflow: hidden;
   padding: 3rem;
 
@@ -86,8 +86,8 @@
     height: 36px;
     flex-shrink: 0;
     border-radius: 8px;
-    background: rgba(168, 85, 247, 0.2);
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    background: rgba($purple,0.2);
+    border: 1px solid rgba($purple,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,7 +108,7 @@
 .circle {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba($purple,0.3) 0%, transparent 70%);
 
   &--1 { width: 500px; height: 500px; top: -150px; right: -150px; }
   &--2 { width: 350px; height: 350px; bottom: -100px; left: -80px; }
@@ -239,7 +239,7 @@
     &:focus {
       outline: none;
       border-color: $blue-500;
-      box-shadow: 0 0 0 3px rgba(168,85,247,0.15);
+      box-shadow: 0 0 0 3px rgba($purple,0.15);
     }
   }
 
@@ -248,7 +248,7 @@
     input[type="password"],
     input[type="text"] {
       border-color: $red;
-      &:focus { box-shadow: 0 0 0 3px rgba(248,113,113,0.15); }
+      &:focus { box-shadow: 0 0 0 3px rgba($red,0.15); }
     }
   }
 
@@ -368,13 +368,13 @@
   justify-content: center;
   gap: 0.6rem;
   transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(168,85,247,0.35);
+  box-shadow: 0 4px 20px rgba($purple,0.35);
   margin-bottom: 1.5rem;
 
   &:hover:not(:disabled) {
     opacity: 0.92;
     transform: translateY(-1px);
-    box-shadow: 0 6px 28px rgba(168,85,247,0.45);
+    box-shadow: 0 6px 28px rgba($purple,0.45);
   }
 
   &:active:not(:disabled) { transform: translateY(0); }

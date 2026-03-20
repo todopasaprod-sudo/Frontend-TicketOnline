@@ -148,22 +148,22 @@
 
     &:hover {
       color: $text-main;
-      background: rgba(168,85,247,0.1);
+      background: rgba($purple,0.1);
     }
 
     &.active {
       color: $blue-400;
-      background: rgba(168,85,247,0.14);
+      background: rgba($purple,0.14);
       font-weight: 600;
     }
 
     &--create {
       color: $blue-400;
-      border-color: rgba(168,85,247,0.22);
+      border-color: rgba($purple,0.22);
 
       &:hover, &.active {
-        background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba(168,85,247,0.18));
-        border-color: rgba(168,85,247,0.45);
+        background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba($purple,0.18));
+        border-color: rgba($purple,0.45);
         color: #fff;
       }
     }
@@ -240,12 +240,12 @@
 
     &:hover {
       color: $text-main;
-      background: rgba(168,85,247,0.08);
+      background: rgba($purple,0.08);
     }
 
     &.active {
       color: $blue-400;
-      background: rgba(168,85,247,0.12);
+      background: rgba($purple,0.12);
       font-weight: 600;
     }
   }
@@ -308,8 +308,8 @@
     svg { width: 15px; height: 15px; }
 
     &:hover {
-      color: #f87171;
-      background: rgba(248,113,113,0.1);
+      color: $red;
+      background: rgba($red,0.1);
     }
   }
 }
@@ -415,8 +415,8 @@
 
     &:hover {
       color: $text-main;
-      border-color: rgba(168,85,247,0.4);
-      background: rgba(168,85,247,0.08);
+      border-color: rgba($purple,0.4);
+      background: rgba($purple,0.08);
     }
 
     @media (max-width: 480px) { display: none; }

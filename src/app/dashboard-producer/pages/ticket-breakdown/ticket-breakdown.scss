@@ -68,11 +68,11 @@
     transition: all 0.18s;
     white-space: nowrap;
 
-    &:hover { color: $text-main; border-color: rgba(33,169,255,0.35); }
+    &:hover { color: $text-main; border-color: rgba($blue-500,0.35); }
 
     &--active {
-      background: rgba(33,169,255,0.14);
-      border-color: rgba(33,169,255,0.45);
+      background: rgba($blue-500,0.14);
+      border-color: rgba($blue-500,0.45);
       color: $text-main;
       font-weight: 600;
     }
@@ -381,15 +381,15 @@
   }
 
   tbody tr {
-    border-top: 1px solid rgba(33,169,255,0.07);
+    border-top: 1px solid rgba($blue-500,0.07);
     transition: background 0.15s;
 
-    &:hover { background: rgba(33,169,255,0.05); }
+    &:hover { background: rgba($blue-500,0.05); }
   }
 
   tfoot tr {
     border-top: 1px solid $border;
-    background: rgba(33,169,255,0.04);
+    background: rgba($blue-500,0.04);
   }
 
   td {
@@ -419,7 +419,7 @@
     text-align: right;
 
     &--hi    { color: $text-main; font-weight: 600; }
-    &--green { color: #34d399; font-weight: 600; }
+    &--green { color: $green; font-weight: 600; }
   }
 
   &__total-label {

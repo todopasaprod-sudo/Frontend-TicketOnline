@@ -45,8 +45,8 @@
   padding: 1rem 1.25rem;
   min-width: 200px;
 
-  &--a { border-color: rgba(99,102,241,0.4); }
-  &--b { border-color: rgba(168,85,247,0.4); }
+  &--a { border-color: rgba($color-a,0.4); }
+  &--b { border-color: rgba($purple,0.4); }
 
   &__label {
     font-size: 0.7rem;
@@ -83,15 +83,15 @@
     }
 
     .period-sel--a &--active {
-      background: rgba(99,102,241,0.2);
-      border-color: rgba(99,102,241,0.55);
+      background: rgba($color-a,0.2);
+      border-color: rgba($color-a,0.55);
       color: #a5b4fc;
       font-weight: 600;
     }
 
     .period-sel--b &--active {
-      background: rgba(168,85,247,0.2);
-      border-color: rgba(168,85,247,0.55);
+      background: rgba($purple,0.2);
+      border-color: rgba($purple,0.55);
       color: $blue-400;
       font-weight: 600;
     }
@@ -127,7 +127,7 @@
   align-items: flex-start;
   transition: border-color 0.2s;
 
-  &:hover { border-color: rgba(168,85,247,0.3); }
+  &:hover { border-color: rgba($purple,0.3); }
 
   &__icon {
     width: 40px;
@@ -230,7 +230,7 @@
 
   &--up {
     background: rgba(16,185,129,0.12);
-    color: #34d399;
+    color: $green;
   }
 
   &--down {

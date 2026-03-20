@@ -37,7 +37,7 @@
     border-radius: 10px;
     font-size: 0.88rem;
     font-weight: 600;
-    box-shadow: 0 2px 12px rgba(168,85,247,0.3);
+    box-shadow: 0 2px 12px rgba($purple,0.3);
     transition: all 0.2s;
     flex-shrink: 0;
 
@@ -45,7 +45,7 @@
 
     &:hover {
       opacity: 0.9;
-      box-shadow: 0 4px 20px rgba(168,85,247,0.45);
+      box-shadow: 0 4px 20px rgba($purple,0.45);
       transform: translateY(-1px);
     }
   }
@@ -117,7 +117,7 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 
   &:hover {
-    border-color: rgba(168,85,247,0.35);
+    border-color: rgba($purple,0.35);
     box-shadow: 0 4px 20px rgba(0,0,0,0.25);
   }
 
@@ -164,7 +164,7 @@
 
     svg { width: 13px; height: 13px; }
 
-    &--up   { color: #34d399; }
+    &--up   { color: $green; }
     &--down { color: #f87171; }
   }
 }
@@ -189,10 +189,10 @@
   }
 
   tbody tr {
-    border-top: 1px solid rgba(168,85,247,0.08);
+    border-top: 1px solid rgba($purple,0.08);
     transition: background 0.15s;
 
-    &:hover { background: rgba(168,85,247,0.05); }
+    &:hover { background: rgba($purple,0.05); }
   }
 
   td {
@@ -289,7 +289,7 @@
   font-size: 0.72rem;
   font-weight: 700;
 
-  &--publicado  { background: rgba(16,185,129,0.15);  color: #34d399; }
+  &--publicado  { background: rgba(16,185,129,0.15);  color: $green; }
   &--borrador   { background: rgba(107,114,128,0.2);   color: #9ca3af; }
   &--agotado    { background: rgba(239,68,68,0.15);    color: #f87171; }
   &--finalizado { background: rgba(139,92,246,0.15);   color: #a78bfa; }

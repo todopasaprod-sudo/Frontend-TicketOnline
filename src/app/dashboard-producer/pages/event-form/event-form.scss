@@ -65,7 +65,7 @@
   &--success {
     background: rgba(16,185,129,0.12);
     border: 1px solid rgba(16,185,129,0.3);
-    color: #34d399;
+    color: $green;
   }
 }
 
@@ -172,7 +172,7 @@
     &:focus {
       outline: none;
       border-color: $blue-500;
-      box-shadow: 0 0 0 3px rgba(168,85,247,0.12);
+      box-shadow: 0 0 0 3px rgba($purple,0.12);
     }
 
     option { background: #160d2e; }
@@ -188,7 +188,7 @@
     select,
     textarea {
       border-color: $red;
-      &:focus { box-shadow: 0 0 0 3px rgba(248,113,113,0.12); }
+      &:focus { box-shadow: 0 0 0 3px rgba($red,0.12); }
     }
   }
 
@@ -226,7 +226,7 @@
 
     &--active {
       border-color: #fff;
-      box-shadow: 0 0 0 3px rgba(168,85,247,0.5), 0 4px 14px rgba(0,0,0,0.4);
+      box-shadow: 0 0 0 3px rgba($purple,0.5), 0 4px 14px rgba(0,0,0,0.4);
       transform: scale(1.05);
     }
   }
@@ -255,11 +255,11 @@
     cursor: pointer;
     transition: all 0.18s;
 
-    &:hover { border-color: rgba(168,85,247,0.35); background: rgba(168,85,247,0.06); }
+    &:hover { border-color: rgba($purple,0.35); background: rgba($purple,0.06); }
 
     &--active {
       border-color: $blue-500;
-      background: rgba(168,85,247,0.1);
+      background: rgba($purple,0.1);
     }
   }
 
@@ -268,7 +268,7 @@
     height: 36px;
     flex-shrink: 0;
     border-radius: 8px;
-    background: rgba(168,85,247,0.15);
+    background: rgba($purple,0.15);
     color: $blue-400;
     display: flex;
     align-items: center;
@@ -313,11 +313,11 @@
     cursor: pointer;
     transition: all 0.18s;
 
-    &:hover { border-color: rgba(168,85,247,0.35); }
+    &:hover { border-color: rgba($purple,0.35); }
 
     &--active {
       border-color: $blue-500;
-      background: rgba(168,85,247,0.1);
+      background: rgba($purple,0.1);
     }
 
     &__label {
@@ -366,10 +366,10 @@
 
   &--secondary {
     color: $blue-400;
-    background: rgba(168,85,247,0.1);
-    border: 1px solid rgba(168,85,247,0.25);
+    background: rgba($purple,0.1);
+    border: 1px solid rgba($purple,0.25);
 
-    &:hover { background: rgba(168,85,247,0.18); }
+    &:hover { background: rgba($purple,0.18); }
 
     &:disabled { opacity: 0.5; cursor: not-allowed; }
   }
@@ -377,11 +377,11 @@
   &--primary {
     background: linear-gradient(135deg, $blue-600, $blue-500);
     color: #fff;
-    box-shadow: 0 3px 14px rgba(168,85,247,0.35);
+    box-shadow: 0 3px 14px rgba($purple,0.35);
 
     &:hover:not(:disabled) {
       opacity: 0.9;
-      box-shadow: 0 5px 22px rgba(168,85,247,0.5);
+      box-shadow: 0 5px 22px rgba($purple,0.5);
       transform: translateY(-1px);
     }
 

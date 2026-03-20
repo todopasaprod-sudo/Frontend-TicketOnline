@@ -54,11 +54,11 @@
     transition: all 0.18s;
     white-space: nowrap;
 
-    &:hover { color: $text-main; border-color: rgba(168,85,247,0.35); }
+    &:hover { color: $text-main; border-color: rgba($purple,0.35); }
 
     &--active {
-      background: rgba(168,85,247,0.14);
-      border-color: rgba(168,85,247,0.45);
+      background: rgba($purple,0.14);
+      border-color: rgba($purple,0.45);
       color: $text-main;
       font-weight: 600;
     }
@@ -86,19 +86,19 @@
   &--on-track {
     background: rgba(16,185,129,0.08);
     border-color: rgba(16,185,129,0.28);
-    color: #34d399;
+    color: $green;
 
-    .risk-banner__dot { background: #34d399; }
-    .risk-banner__label { color: #34d399; }
+    .risk-banner__dot { background: $green; }
+    .risk-banner__label { color: $green; }
   }
 
   &--moderate {
     background: rgba(245,158,11,0.08);
     border-color: rgba(245,158,11,0.28);
-    color: #fbbf24;
+    color: $yellow;
 
-    .risk-banner__dot { background: #fbbf24; }
-    .risk-banner__label { color: #fbbf24; }
+    .risk-banner__dot { background: $yellow; }
+    .risk-banner__label { color: $yellow; }
   }
 
   &--at-risk {
@@ -181,7 +181,7 @@
     letter-spacing: -0.03em;
     line-height: 1;
 
-    &--green { color: #34d399; }
+    &--green { color: $green; }
     &--muted { color: $text-muted; }
   }
 
@@ -257,13 +257,13 @@
       border-radius: 99px;
     }
 
-    &--actual::before   { background: #a855f7; }
+    &--actual::before   { background: $purple; }
     &--projected::before {
       background: repeating-linear-gradient(90deg, #c084fc 0 6px, transparent 6px 10px);
       height: 2px;
     }
     &--capacity::before {
-      background: repeating-linear-gradient(90deg, #34d399 0 6px, transparent 6px 10px);
+      background: repeating-linear-gradient(90deg, $green 0 6px, transparent 6px 10px);
       height: 2px;
     }
   }
@@ -339,7 +339,7 @@
   &__value {
     font-size: 2rem;
     font-weight: 900;
-    color: #34d399;
+    color: $green;
     letter-spacing: -0.04em;
     margin: 0 0 0.4rem;
     line-height: 1;
@@ -381,7 +381,7 @@
     left: 0;
     top: 0;
     height: 100%;
-    background: rgba(168,85,247,0.5);
+    background: rgba($purple,0.5);
     border-radius: 99px;
     transition: width 0.5s ease;
   }
@@ -391,7 +391,7 @@
     left: 0;
     top: 0;
     height: 100%;
-    background: #34d399;
+    background: $green;
     border-radius: 99px;
     opacity: 0.35;
     transition: width 0.5s ease;
