@@ -1,0 +1,113 @@
+<div class="sv">
+
+  <!-- Header -->
+  <div class="sv__header">
+    <div>
+      <h2 class="sv__title">Velocidad de ventas</h2>
+      <p class="sv__sub">Evolución diaria de tickets vendidos por evento · últimos 30 días</p>
+    </div>
+
+    <!-- Event selector -->
+    <div class="event-picker">
+      @for (ev of events; track ev.id) {
+        <button
+          class="event-picker__btn"
+          [class.event-picker__btn--active]="selectedEventId() === ev.id"
+          (click)="selectEvent(ev.id)">
+          <span class="event-picker__dot" [style.background]="ev.gradient"></span>
+          {{ ev.title }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="sv-stats">
+    <div class="sv-stat">
+      <p class="sv-stat__label">Tickets vendidos</p>
+      <p class="sv-stat__value">{{ selectedEvent().ticketsSold.toLocaleString('es-AR') }}</p>
+    </div>
+    <div class="sv-stat">
+      <p class="sv-stat__label">Ingresos totales</p>
+      <p class="sv-stat__value sv-stat__value--green">
+        @if (selectedEvent().price) { {{ formatMoney(totalRevenue()) }} }
+        @else { <span class="free-tag">Gratuito</span> }
+      </p>
+    </div>
+    <div class="sv-stat">
+      <p class="sv-stat__label">Promedio diario</p>
+      <p class="sv-stat__value">{{ avgDailyTickets() }} tickets</p>
+    </div>
+    <div class="sv-stat">
+      <p class="sv-stat__label">Pico de ventas</p>
+      <p class="sv-stat__value">Día {{ peakDay().day }} <span class="sv-stat__peak">({{ peakDay().tickets }})</span></p>
+    </div>
+  </div>
+
+  <!-- Cumulative SVG line chart -->
+  <div class="chart-card">
+    <div class="chart-card__header">
+      <h3 class="chart-card__title">Acumulado de ventas</h3>
+      <span class="chart-card__sub">{{ selectedEvent().title }}</span>
+    </div>
+    <div class="line-chart-wrap">
+      <svg class="line-chart" viewBox="0 0 600 160" preserveAspectRatio="none">
+        <!-- Grid lines -->
+        <line x1="8" y1="8" x2="8" y2="152" stroke="rgba(168,85,247,0.1)" stroke-width="1"/>
+        <line x1="8" y1="80" x2="592" y2="80" stroke="rgba(168,85,247,0.08)" stroke-width="1" stroke-dasharray="4 4"/>
+        <line x1="8" y1="152" x2="592" y2="152" stroke="rgba(168,85,247,0.12)" stroke-width="1"/>
+
+        <!-- Area fill -->
+        <path [attr.d]="svgArea()" fill="url(#areaGrad)" opacity="0.35"/>
+
+        <!-- Line -->
+        <path [attr.d]="svgPath()" fill="none" stroke="#a855f7" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Gradient def -->
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- End dot -->
+        <circle
+          [attr.cx]="592"
+          [attr.cy]="8 + (1 - cumulativeSales()[29] / maxCumulative()) * 144"
+          r="4" fill="#a855f7" stroke="#160d2e" stroke-width="2"/>
+      </svg>
+
+      <!-- X axis labels -->
+      <div class="line-chart__x-axis">
+        <span>Día 1</span>
+        <span>Día 10</span>
+        <span>Día 20</span>
+        <span>Día 30</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily bar chart -->
+  <div class="chart-card">
+    <div class="chart-card__header">
+      <h3 class="chart-card__title">Ventas diarias</h3>
+      <span class="chart-card__sub">Distribución por día</span>
+    </div>
+    <div class="daily-bars">
+      @for (day of dailySales(); track day.day) {
+        <div class="daily-bar" [title]="'Día ' + day.day + ': ' + day.tickets + ' tickets'">
+          <div class="daily-bar__fill"
+               [style.height]="barHeight(day.tickets) + '%'"
+               [style.background]="selectedEvent().gradient">
+          </div>
+        </div>
+      }
+    </div>
+    <div class="daily-bars__x">
+      <span>1</span><span>10</span><span>20</span><span>30</span>
+    </div>
+  </div>
+
+</div>

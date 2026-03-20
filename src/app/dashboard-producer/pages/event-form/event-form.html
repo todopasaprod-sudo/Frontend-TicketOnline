@@ -1,0 +1,267 @@
+<div class="event-form-page">
+
+  <!-- Page header -->
+  <div class="event-form-page__header">
+    <a routerLink="../" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Mis Eventos
+    </a>
+    <div>
+      <h2 class="event-form-page__title">
+        {{ isEditing ? 'Editar evento' : 'Crear nuevo evento' }}
+      </h2>
+      <p class="event-form-page__sub">
+        {{ isEditing ? 'Modificá los datos de tu evento.' : 'Completá los datos para publicar tu evento.' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Success toast -->
+  @if (saveSuccess()) {
+    <div class="toast toast--success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      {{ form.get('status')?.value === 'publicado' ? 'Evento publicado exitosamente.' : 'Borrador guardado correctamente.' }}
+    </div>
+  }
+
+  <!-- Form + Preview layout -->
+  <div class="event-form-page__layout">
+
+    <!-- FORM -->
+    <form class="event-form" [formGroup]="form" novalidate>
+
+      <!-- Section 1: Info básica -->
+      <section class="form-section">
+        <div class="form-section__title">
+          <span class="form-section__num">1</span>
+          Información del evento
+        </div>
+
+        <div class="field" [class.field--error]="isInvalid('title')">
+          <label for="title">Título del evento <span class="required">*</span></label>
+          <input id="title" type="text" formControlName="title"
+                 placeholder="Ej: Lollapalooza Argentina 2025"/>
+          @if (isInvalid('title')) {
+            <span class="field__error">Ingresá un título de al menos 5 caracteres.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="description">Descripción</label>
+          <textarea id="description" formControlName="description" rows="3"
+                    placeholder="Describí tu evento, artistas, propuesta..."></textarea>
+        </div>
+
+        <div class="field" [class.field--error]="isInvalid('category')">
+          <label for="category">Categoría <span class="required">*</span></label>
+          <select id="category" formControlName="category">
+            <option value="">Seleccionar categoría</option>
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+          @if (isInvalid('category')) {
+            <span class="field__error">Seleccioná una categoría.</span>
+          }
+        </div>
+      </section>
+
+      <!-- Section 2: Fecha y lugar -->
+      <section class="form-section">
+        <div class="form-section__title">
+          <span class="form-section__num">2</span>
+          Fecha, hora y lugar
+        </div>
+
+        <div class="fields-row">
+          <div class="field" [class.field--error]="isInvalid('date')">
+            <label for="date">Fecha <span class="required">*</span></label>
+            <input id="date" type="date" formControlName="date"/>
+            @if (isInvalid('date')) {
+              <span class="field__error">Seleccioná una fecha.</span>
+            }
+          </div>
+          <div class="field" [class.field--error]="isInvalid('time')">
+            <label for="time">Hora de inicio <span class="required">*</span></label>
+            <input id="time" type="time" formControlName="time"/>
+            @if (isInvalid('time')) {
+              <span class="field__error">Seleccioná una hora.</span>
+            }
+          </div>
+        </div>
+
+        <div class="field" [class.field--error]="isInvalid('venue')">
+          <label for="venue">Nombre del venue <span class="required">*</span></label>
+          <input id="venue" type="text" formControlName="venue"
+                 placeholder="Ej: Estadio Monumental, Teatro Colón"/>
+          @if (isInvalid('venue')) {
+            <span class="field__error">Ingresá el nombre del venue.</span>
+          }
+        </div>
+
+        <div class="fields-row">
+          <div class="field" [class.field--error]="isInvalid('city')">
+            <label for="city">Ciudad <span class="required">*</span></label>
+            <select id="city" formControlName="city">
+              <option value="">Seleccionar ciudad</option>
+              @for (c of cities; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            @if (isInvalid('city')) {
+              <span class="field__error">Seleccioná una ciudad.</span>
+            }
+          </div>
+          <div class="field">
+            <label for="address">Dirección</label>
+            <input id="address" type="text" formControlName="address"
+                   placeholder="Av. del Libertador 4101"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Imagen -->
+      <section class="form-section">
+        <div class="form-section__title">
+          <span class="form-section__num">3</span>
+          Imagen del evento
+        </div>
+        <p class="form-section__hint">Elegí un color para la portada de tu evento.</p>
+
+        <div class="gradient-picker">
+          @for (g of gradients; track g.value) {
+            <button
+              type="button"
+              class="gradient-picker__swatch"
+              [class.gradient-picker__swatch--active]="selectedGradient() === g.value"
+              [style.background]="g.value"
+              [title]="g.label"
+              (click)="selectGradient(g.value)">
+              @if (selectedGradient() === g.value) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              }
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Section 4: Entradas -->
+      <section class="form-section">
+        <div class="form-section__title">
+          <span class="form-section__num">4</span>
+          Configuración de entradas
+        </div>
+
+        <div class="ticket-type">
+          <label class="ticket-type__option" [class.ticket-type__option--active]="form.get('ticketType')?.value === 'paid'">
+            <input type="radio" formControlName="ticketType" value="paid"/>
+            <div class="ticket-type__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+              </svg>
+            </div>
+            <div>
+              <span class="ticket-type__label">De pago</span>
+              <span class="ticket-type__desc">Cobrá un precio por entrada</span>
+            </div>
+          </label>
+          <label class="ticket-type__option" [class.ticket-type__option--active]="form.get('ticketType')?.value === 'free'">
+            <input type="radio" formControlName="ticketType" value="free"/>
+            <div class="ticket-type__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div>
+              <span class="ticket-type__label">Gratuito</span>
+              <span class="ticket-type__desc">Acceso libre sin costo</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="fields-row">
+          @if (form.get('ticketType')?.value === 'paid') {
+            <div class="field" [class.field--error]="isInvalid('price')">
+              <label for="price">Precio por entrada ($) <span class="required">*</span></label>
+              <input id="price" type="number" formControlName="price"
+                     placeholder="Ej: 15000" min="1"/>
+              @if (isInvalid('price')) {
+                <span class="field__error">Ingresá un precio mayor a 0.</span>
+              }
+            </div>
+          }
+          <div class="field" [class.field--error]="isInvalid('capacity')">
+            <label for="capacity">Capacidad total <span class="required">*</span></label>
+            <input id="capacity" type="number" formControlName="capacity"
+                   placeholder="Ej: 1000" min="1"/>
+            @if (isInvalid('capacity')) {
+              <span class="field__error">Ingresá la capacidad del evento.</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Publicación -->
+      <section class="form-section">
+        <div class="form-section__title">
+          <span class="form-section__num">5</span>
+          Estado de publicación
+        </div>
+
+        <div class="publish-options">
+          <label class="publish-option" [class.publish-option--active]="form.get('status')?.value === 'borrador'">
+            <input type="radio" formControlName="status" value="borrador"/>
+            <div>
+              <span class="publish-option__label">Guardar como borrador</span>
+              <span class="publish-option__desc">Solo vos podés verlo. Podés publicarlo después.</span>
+            </div>
+          </label>
+          <label class="publish-option" [class.publish-option--active]="form.get('status')?.value === 'publicado'">
+            <input type="radio" formControlName="status" value="publicado"/>
+            <div>
+              <span class="publish-option__label">Publicar ahora</span>
+              <span class="publish-option__desc">El evento será visible para todos los usuarios.</span>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <div class="event-form__actions">
+        <a routerLink="../" class="btn btn--ghost">Cancelar</a>
+        <button type="button" class="btn btn--secondary"
+                (click)="saveDraft()" [disabled]="isLoading()">
+          Guardar borrador
+        </button>
+        <button type="submit" class="btn btn--primary"
+                (click)="onSubmit()" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner"></span> Guardando...
+          } @else {
+            {{ isEditing ? 'Guardar cambios' : 'Publicar evento' }}
+          }
+        </button>
+      </div>
+
+    </form>
+
+    <!-- PREVIEW -->
+    <div class="preview-panel">
+      <h3 class="preview-panel__title">Vista previa</h3>
+      <p class="preview-panel__sub">Así verán tu evento los usuarios.</p>
+      <div class="preview-panel__card">
+        <app-event-card [event]="previewEvent"></app-event-card>
+      </div>
+    </div>
+
+  </div>
+</div>

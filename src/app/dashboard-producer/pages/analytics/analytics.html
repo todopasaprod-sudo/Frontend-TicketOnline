@@ -1,0 +1,230 @@
+<div class="analytics">
+
+  <!-- Header + selector de período -->
+  <div class="analytics__header">
+    <div>
+      <h2 class="analytics__title">Estadísticas</h2>
+      <p class="analytics__sub">Rendimiento de tus eventos · 2025</p>
+    </div>
+    <div class="period-selector">
+      @for (p of periods; track p; let i = $index) {
+        <button
+          class="period-selector__btn"
+          [class.period-selector__btn--active]="selectedPeriod() === i"
+          (click)="setPeriod(i)">
+          {{ p }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    @for (kpi of kpis(); track kpi.label) {
+      <div class="kpi-card">
+        <div class="kpi-card__icon" [style.background]="kpi.iconBg" [style.color]="kpi.iconColor">
+          @switch (kpi.icon) {
+            @case ('money') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+              </svg>
+            }
+            @case ('ticket') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 9a3 3 0 010-6h20a3 3 0 010 6"/>
+                <path d="M2 15a3 3 0 000 6h20a3 3 0 000-6"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+              </svg>
+            }
+            @case ('percent') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="5" x2="5" y2="19"/>
+                <circle cx="6.5" cy="6.5" r="2.5"/>
+                <circle cx="17.5" cy="17.5" r="2.5"/>
+              </svg>
+            }
+            @case ('tag') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            }
+          }
+        </div>
+        <div class="kpi-card__body">
+          <p class="kpi-card__label">{{ kpi.label }}</p>
+          <p class="kpi-card__value">{{ kpi.value }}</p>
+          <p class="kpi-card__trend"
+             [class.kpi-card__trend--up]="kpi.trend > 0"
+             [class.kpi-card__trend--down]="kpi.trend < 0">
+            @if (kpi.trend > 0) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            }
+            {{ trendLabel(kpi.trend) }} vs. mes anterior
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Gráfico de ingresos mensuales -->
+  <div class="chart-card">
+    <div class="chart-card__header">
+      <h3 class="chart-card__title">Ingresos mensuales</h3>
+      <span class="chart-card__sub">Enero – Junio 2025</span>
+    </div>
+
+    <div class="bar-chart">
+      @for (rev of monthlyRevenue; track $index; let i = $index) {
+        <div class="bar-chart__col" [class.bar-chart__col--active]="selectedPeriod() === i"
+             (click)="setPeriod(i)">
+          <div class="bar-chart__bar-wrap">
+            <div class="bar-chart__bar" [style.height]="barHeightPercent(rev) + '%'">
+              <div class="bar-chart__tooltip">{{ formatMoney(rev) }}</div>
+            </div>
+          </div>
+          <span class="bar-chart__label">{{ periods[i] }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Eje Y referencial -->
+    <div class="bar-chart__y-labels">
+      <span>{{ formatMoney(maxRevenue) }}</span>
+      <span>{{ formatMoney(maxRevenue / 2) }}</span>
+      <span>$0</span>
+    </div>
+  </div>
+
+  <!-- Dos columnas: Tickets por evento + por categoría -->
+  <div class="analytics__two-col">
+
+    <!-- Tickets por evento -->
+    <div class="chart-card">
+      <div class="chart-card__header">
+        <h3 class="chart-card__title">Tickets vendidos por evento</h3>
+        <span class="chart-card__sub">Top 5</span>
+      </div>
+      <div class="h-bars">
+        @for (event of ticketsByEvent; track event.id) {
+          <div class="h-bar">
+            <div class="h-bar__label">
+              <div class="h-bar__dot" [style.background]="event.gradient"></div>
+              <span class="h-bar__name">{{ event.title }}</span>
+            </div>
+            <div class="h-bar__track">
+              <div class="h-bar__fill"
+                   [style.width]="ticketBarPercent(event.ticketsSold) + '%'"
+                   [style.background]="event.gradient">
+              </div>
+            </div>
+            <span class="h-bar__value">{{ event.ticketsSold.toLocaleString('es-AR') }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Por categoría -->
+    <div class="chart-card">
+      <div class="chart-card__header">
+        <h3 class="chart-card__title">Distribución por categoría</h3>
+        <span class="chart-card__sub">Total: {{ totalCategoryTickets.toLocaleString('es-AR') }} tickets</span>
+      </div>
+
+      <!-- Barra apilada -->
+      <div class="stacked-bar">
+        @for (cat of categoryStats; track cat.label) {
+          @if (categoryPercent(cat.tickets) > 0) {
+            <div class="stacked-bar__segment"
+                 [style.width]="categoryPercent(cat.tickets) + '%'"
+                 [style.background]="cat.color"
+                 [title]="cat.label + ': ' + categoryPercent(cat.tickets) + '%'">
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Lista -->
+      <div class="cat-list">
+        @for (cat of categoryStats; track cat.label) {
+          <div class="cat-item">
+            <div class="cat-item__left">
+              <span class="cat-item__dot" [style.background]="cat.color"></span>
+              <span class="cat-item__name">{{ cat.label }}</span>
+            </div>
+            <div class="cat-item__right">
+              <div class="cat-item__track">
+                <div class="cat-item__fill"
+                     [style.width]="categoryPercent(cat.tickets) + '%'"
+                     [style.background]="cat.color + '88'">
+                </div>
+              </div>
+              <span class="cat-item__pct">{{ categoryPercent(cat.tickets) }}%</span>
+              <span class="cat-item__count">{{ cat.tickets.toLocaleString('es-AR') }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Top eventos por vistas -->
+  <div class="chart-card">
+    <div class="chart-card__header">
+      <h3 class="chart-card__title">Top eventos por vistas</h3>
+      <span class="chart-card__sub">Todos los períodos</span>
+    </div>
+    <div class="table-wrap">
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Vistas</th>
+            <th>Tickets vendidos</th>
+            <th>Conversión</th>
+            <th>Ingresos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of topByViews; track event.id) {
+            <tr>
+              <td>
+                <div class="event-cell">
+                  <div class="event-cell__thumb" [style.background]="event.gradient"></div>
+                  <div>
+                    <p class="event-cell__name">{{ event.title }}</p>
+                    <p class="event-cell__meta">{{ event.category }} · {{ event.city }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="num-cell">{{ event.views.toLocaleString('es-AR') }}</td>
+              <td class="num-cell">{{ event.ticketsSold.toLocaleString('es-AR') }}</td>
+              <td>
+                <span class="conv-badge"
+                      [class.conv-badge--high]="event.ticketsSold / event.views > 0.1">
+                  {{ conversionRate(event) }}
+                </span>
+              </td>
+              <td class="num-cell num-cell--income">
+                @if (event.price) {
+                  {{ formatMoney(event.ticketsSold * event.price) }}
+                } @else {
+                  <span class="free-label">Gratuito</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

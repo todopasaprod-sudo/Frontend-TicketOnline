@@ -1,0 +1,163 @@
+<div class="geo">
+
+  <!-- Header -->
+  <div class="geo__header">
+    <div>
+      <h2 class="geo__title">Geografía de compradores</h2>
+      <p class="geo__sub">Distribución de tickets vendidos por ciudad de origen</p>
+    </div>
+
+    <!-- Event selector -->
+    <div class="event-picker">
+      @for (ev of eventOptions; track ev.id) {
+        <button
+          class="event-picker__btn"
+          [class.event-picker__btn--active]="selectedId() === ev.id"
+          (click)="selectEvent(ev.id)">
+          <span class="event-picker__dot" [style.background]="ev.gradient"></span>
+          {{ ev.title }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <p class="kpi__label">Total compradores</p>
+      <p class="kpi__value">{{ formatNum(totalBuyers()) }}</p>
+    </div>
+    <div class="kpi">
+      <p class="kpi__label">Ciudad principal</p>
+      <p class="kpi__value">
+        @if (topCity()) {
+          {{ topCity()!.city }}
+        } @else { — }
+      </p>
+      @if (topCity()) {
+        <p class="kpi__meta">{{ topCity()!.pct }}% del total</p>
+      }
+    </div>
+    <div class="kpi">
+      <p class="kpi__label">Ciudades con compradores</p>
+      <p class="kpi__value">{{ cityCount() }}</p>
+    </div>
+    <div class="kpi">
+      <p class="kpi__label">Concentración</p>
+      <p class="kpi__value"
+         [class.kpi__value--red]="concentrationIdx() > 75"
+         [class.kpi__value--yellow]="concentrationIdx() > 50 && concentrationIdx() <= 75"
+         [class.kpi__value--green]="concentrationIdx() <= 50">
+        {{ concentrationIdx() }}%
+      </p>
+      <p class="kpi__meta">% de la ciudad #1</p>
+    </div>
+  </div>
+
+  <!-- Map + Bars -->
+  <div class="geo__body">
+
+    <!-- Argentina SVG map -->
+    <div class="chart-card map-card">
+      <div class="chart-card__header">
+        <h3 class="chart-card__title">Distribución geográfica</h3>
+        <span class="chart-card__sub">{{ selectedOption().title }}</span>
+      </div>
+
+      <div class="map-wrap">
+        <svg class="map-svg" viewBox="0 0 220 400" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- Argentina fill -->
+          <path [attr.d]="argentinaPath"
+                fill="rgba(168,85,247,0.07)"
+                stroke="rgba(168,85,247,0.25)"
+                stroke-width="1.5"
+                stroke-linejoin="round"/>
+
+          <!-- City dots -->
+          @for (city of rawCities(); track city.city) {
+            <g class="map-city" [attr.data-city]="city.city">
+              <!-- Pulse ring -->
+              <circle
+                [attr.cx]="city.x"
+                [attr.cy]="city.y"
+                [attr.r]="city.radius + 4"
+                [attr.fill]="city.color"
+                opacity="0.15"
+                class="map-city__pulse"/>
+
+              <!-- Main dot -->
+              <circle
+                [attr.cx]="city.x"
+                [attr.cy]="city.y"
+                [attr.r]="city.radius"
+                [attr.fill]="city.color"
+                opacity="0.85"
+                stroke="#0f0a1e"
+                stroke-width="1.5"
+                class="map-city__dot"/>
+
+              <!-- Label for top 3 -->
+              @if (rawCities().indexOf(city) < 3) {
+                <text
+                  [attr.x]="city.x"
+                  [attr.y]="city.y - city.radius - 5"
+                  text-anchor="middle"
+                  font-size="7"
+                  font-family="Inter, sans-serif"
+                  font-weight="600"
+                  fill="rgba(243,240,255,0.8)">
+                  {{ city.city }}
+                </text>
+              }
+            </g>
+          }
+
+        </svg>
+
+        <!-- Map legend -->
+        <div class="map-legend">
+          <div class="map-legend__scale">
+            <div class="map-legend__dot map-legend__dot--sm"></div>
+            <div class="map-legend__dot map-legend__dot--md"></div>
+            <div class="map-legend__dot map-legend__dot--lg"></div>
+          </div>
+          <span class="map-legend__label">Volumen de compradores</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horizontal bars -->
+    <div class="chart-card bars-card">
+      <div class="chart-card__header">
+        <h3 class="chart-card__title">Tickets por ciudad</h3>
+        <span class="chart-card__sub">Ranking</span>
+      </div>
+
+      <div class="city-bars">
+        @for (city of rawCities(); track city.city; let i = $index) {
+          <div class="city-bar">
+            <div class="city-bar__header">
+              <div class="city-bar__rank">{{ i + 1 }}</div>
+              <span class="city-bar__dot" [style.background]="city.color"></span>
+              <span class="city-bar__name">{{ city.city }}</span>
+              <span class="city-bar__pct">{{ city.pct }}%</span>
+            </div>
+            <div class="city-bar__track">
+              <div class="city-bar__fill"
+                   [style.width]="city.pct + '%'"
+                   [style.background]="city.color">
+              </div>
+            </div>
+            <div class="city-bar__footer">
+              <span class="city-bar__count">{{ formatNum(city.tickets) }} tickets</span>
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

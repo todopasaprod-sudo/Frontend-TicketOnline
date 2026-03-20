@@ -1,0 +1,203 @@
+<div class="forecast">
+
+  <!-- Header -->
+  <div class="forecast__header">
+    <div>
+      <h2 class="forecast__title">Proyección de ventas</h2>
+      <p class="forecast__sub">Estimación basada en la velocidad actual de venta por evento</p>
+    </div>
+
+    <!-- Event selector -->
+    <div class="event-picker">
+      @for (ev of events; track ev.id) {
+        <button
+          class="event-picker__btn"
+          [class.event-picker__btn--active]="selectedEventId() === ev.id"
+          (click)="selectEvent(ev.id)">
+          <span class="event-picker__dot" [style.background]="ev.gradient"></span>
+          {{ ev.title }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Risk banner -->
+  <div class="risk-banner"
+       [class.risk-banner--on-track]="risk() === 'on-track'"
+       [class.risk-banner--moderate]="risk() === 'moderate'"
+       [class.risk-banner--at-risk]="risk() === 'at-risk'">
+    <div class="risk-banner__dot"></div>
+    <div class="risk-banner__body">
+      <span class="risk-banner__label">{{ riskLabel() }}</span>
+      <span class="risk-banner__sub">
+        {{ selectedEvent().title }} ·
+        Proyección: {{ projectedPctByEvent() }}% de capacidad al día del evento
+      </span>
+    </div>
+    @if (risk() === 'on-track') {
+      <svg class="risk-banner__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    } @else if (risk() === 'at-risk') {
+      <svg class="risk-banner__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    } @else {
+      <svg class="risk-banner__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    }
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-row">
+
+    <div class="kpi">
+      <p class="kpi__label">Tickets vendidos</p>
+      <p class="kpi__value">{{ formatNum(selectedEvent().ticketsSold) }}</p>
+      <div class="kpi__progress-track">
+        <div class="kpi__progress-fill"
+             [style.width]="(selectedEvent().ticketsSold / selectedEvent().ticketsTotal * 100) + '%'"
+             [style.background]="selectedEvent().gradient">
+        </div>
+      </div>
+      <p class="kpi__meta">
+        {{ selectedEvent().ticketsSold }} / {{ formatNum(selectedEvent().ticketsTotal) }} ·
+        {{ (selectedEvent().ticketsSold / selectedEvent().ticketsTotal * 100).toFixed(0) }}%
+      </p>
+    </div>
+
+    <div class="kpi">
+      <p class="kpi__label">Velocidad actual</p>
+      <p class="kpi__value">{{ velocity().toFixed(1) }}<span class="kpi__unit"> tick/día</span></p>
+      <p class="kpi__meta">Promedio últimos 7 días</p>
+    </div>
+
+    <div class="kpi">
+      <p class="kpi__label">Días hasta el evento</p>
+      <p class="kpi__value">{{ daysUntilEvent() }}<span class="kpi__unit"> días</span></p>
+      <p class="kpi__meta">{{ selectedEvent().date }} · {{ selectedEvent().venue }}</p>
+    </div>
+
+    <div class="kpi">
+      <p class="kpi__label">Agotamiento proyectado</p>
+      @if (projectedSelloutDayOffset() <= daysUntilEvent()) {
+        <p class="kpi__value kpi__value--green">Día +{{ projectedSelloutDayOffset() }}</p>
+        <p class="kpi__meta">Se agota antes del evento</p>
+      } @else {
+        <p class="kpi__value kpi__value--muted">No se agota</p>
+        <p class="kpi__meta">Quedarán ~{{ formatNum(selectedEvent().ticketsTotal - projectedTicketsByEvent()) }} sin vender</p>
+      }
+    </div>
+
+  </div>
+
+  <!-- SVG Chart -->
+  <div class="chart-card">
+    <div class="chart-card__header">
+      <h3 class="chart-card__title">Evolución y proyección acumulada</h3>
+      <div class="chart-legend">
+        <span class="chart-legend__item chart-legend__item--actual">Ventas reales</span>
+        <span class="chart-legend__item chart-legend__item--projected">Proyección</span>
+        <span class="chart-legend__item chart-legend__item--capacity">Capacidad</span>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <svg class="chart-svg" [attr.viewBox]="'0 0 600 160'" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="fcastGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Capacity line -->
+        <line x1="4" [attr.y1]="capacityLineY()"
+              x2="592" [attr.y2]="capacityLineY()"
+              stroke="#34d399" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.5"/>
+
+        <!-- Event day vertical marker -->
+        <line [attr.x1]="eventDayX()" y1="12"
+              [attr.x2]="eventDayX()" y2="152"
+              stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>
+
+        <!-- Sellout day marker (if within range) -->
+        @if (selloutX()) {
+          <line [attr.x1]="selloutX()" y1="12"
+                [attr.x2]="selloutX()" y2="152"
+                stroke="#34d399" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+          <circle [attr.cx]="selloutX()" [attr.cy]="capacityLineY()" r="4"
+                  fill="#34d399" stroke="#160d2e" stroke-width="1.5"/>
+        }
+
+        <!-- Area fill under actual line -->
+        <path [attr.d]="actualArea()" fill="url(#fcastGrad)" opacity="0.25"/>
+
+        <!-- Actual sales line (solid) -->
+        <path [attr.d]="actualPath()" fill="none" stroke="#a855f7" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Projected line (dashed) -->
+        <path [attr.d]="projectedPath()" fill="none" stroke="#c084fc" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"
+              stroke-dasharray="6 4" opacity="0.85"/>
+
+        <!-- Current position dot (end of actual) -->
+        <circle [attr.cx]="eventDayX()" cy="0" r="0" opacity="0"/>
+        <circle cx="0" cy="0" r="0" opacity="0"/>
+      </svg>
+
+      <!-- X axis -->
+      <div class="chart-x-axis">
+        <span>Hoy -30d</span>
+        <span>Hoy</span>
+        <span class="chart-x-axis__event">🗓 Evento (día +{{ daysUntilEvent() }})</span>
+      </div>
+
+      <!-- Y labels -->
+      <div class="chart-y-labels">
+        <span>{{ formatNum(selectedEvent().ticketsTotal) }}</span>
+        <span>{{ formatNum(Math.round(selectedEvent().ticketsTotal / 2)) }}</span>
+        <span>0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue forecast (only if paid event) -->
+  @if (selectedEvent().price) {
+    <div class="rev-card">
+      <div class="rev-card__left">
+        <p class="rev-card__label">Revenue proyectado al día del evento</p>
+        <p class="rev-card__value">{{ formatMoney(projectedRevenue()!) }}</p>
+        <p class="rev-card__meta">
+          Precio unitario: {{ formatMoney(selectedEvent().price!) }} ·
+          {{ formatNum(projectedTicketsByEvent()) }} tickets estimados
+        </p>
+      </div>
+      <div class="rev-card__bar-area">
+        <div class="rev-card__bar-label">
+          <span>Actual</span>
+          <span>Proyectado</span>
+        </div>
+        <div class="rev-card__bar-track">
+          <div class="rev-card__bar-actual"
+               [style.width]="(selectedEvent().ticketsSold / selectedEvent().ticketsTotal * 100) + '%'">
+          </div>
+          <div class="rev-card__bar-proj"
+               [style.width]="projectedPctByEvent() + '%'">
+          </div>
+        </div>
+        <div class="rev-card__bar-pcts">
+          <span>{{ (selectedEvent().ticketsSold / selectedEvent().ticketsTotal * 100).toFixed(0) }}%</span>
+          <span>{{ projectedPctByEvent() }}%</span>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

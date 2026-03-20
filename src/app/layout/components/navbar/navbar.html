@@ -1,0 +1,78 @@
+<header class="navbar">
+  <div class="navbar__container">
+
+    <!-- Logo -->
+    <a routerLink="/eventos" class="navbar__logo">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="white" fill-opacity="0.15"/>
+        <path d="M14 18h20M14 24h20M14 30h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="36" cy="30" r="5" fill="#a855f7"/>
+        <path d="M34 30l1.5 1.5L38 28" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>TicketOnline</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="navbar__nav">
+      <a routerLink="/eventos" routerLinkActive="active" class="navbar__link">Inicio</a>
+      <a class="navbar__link">Música</a>
+      <a class="navbar__link">Teatro</a>
+      <a class="navbar__link">Deportes</a>
+      <a class="navbar__link">Stand Up</a>
+    </nav>
+
+    <!-- Right actions -->
+    <div class="navbar__actions">
+      <button class="navbar__search-btn" (click)="toggleSearch()" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+      <a routerLink="/login" class="navbar__btn navbar__btn--ghost">Ingresar</a>
+      <a routerLink="/registro" class="navbar__btn navbar__btn--primary">Registro</a>
+      <button class="navbar__hamburger" (click)="toggleMenu()" aria-label="Menú">
+        @if (menuOpen()) {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Search expandable -->
+  @if (searchOpen()) {
+    <div class="navbar__search-bar">
+      <div class="navbar__search-inner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="search" placeholder="Buscar eventos, artistas, lugares..." autofocus/>
+        <button (click)="toggleSearch()" aria-label="Cerrar búsqueda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Mobile menu -->
+  @if (menuOpen()) {
+    <div class="navbar__mobile-menu">
+      <a routerLink="/eventos" class="navbar__mobile-link" (click)="toggleMenu()">Inicio</a>
+      <a class="navbar__mobile-link" (click)="toggleMenu()">Música</a>
+      <a class="navbar__mobile-link" (click)="toggleMenu()">Teatro</a>
+      <a class="navbar__mobile-link" (click)="toggleMenu()">Deportes</a>
+      <a class="navbar__mobile-link" (click)="toggleMenu()">Stand Up</a>
+      <div class="navbar__mobile-auth">
+        <a routerLink="/login" class="navbar__btn navbar__btn--ghost" (click)="toggleMenu()">Ingresar</a>
+        <a routerLink="/registro" class="navbar__btn navbar__btn--primary" (click)="toggleMenu()">Registro</a>
+      </div>
+    </div>
+  }
+</header>

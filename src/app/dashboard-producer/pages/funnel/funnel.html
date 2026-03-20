@@ -1,0 +1,117 @@
+<div class="funnel-page">
+
+  <!-- Header -->
+  <div class="funnel-page__header">
+    <div>
+      <h2 class="funnel-page__title">Embudo de conversión</h2>
+      <p class="funnel-page__sub">Seguimiento del camino del usuario desde visita hasta compra</p>
+    </div>
+
+    <!-- Event selector -->
+    <div class="event-picker">
+      @for (ev of events; track ev.id) {
+        <button
+          class="event-picker__btn"
+          [class.event-picker__btn--active]="selectedEventId() === ev.id"
+          (click)="selectEvent(ev.id)">
+          <span class="event-picker__dot" [style.background]="ev.gradient"></span>
+          {{ ev.title }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Conversion rate highlight -->
+  <div class="conv-highlight">
+    <div class="conv-highlight__label">Tasa de conversión global</div>
+    <div class="conv-highlight__value">{{ conversionRate() }}%</div>
+    <div class="conv-highlight__desc">Visitas → Compras</div>
+  </div>
+
+  <!-- Funnel visual -->
+  <div class="chart-card">
+    <div class="chart-card__header">
+      <h3 class="chart-card__title">Embudo · {{ selectedEvent().title }}</h3>
+      <span class="chart-card__sub">{{ selectedEvent().category }}</span>
+    </div>
+
+    <div class="funnel">
+      @for (step of funnel(); track step.key; let i = $index; let last = $last) {
+
+        <div class="funnel__row">
+          <!-- Step bar -->
+          <div class="funnel__bar-area">
+            <div class="funnel__bar"
+                 [style.width]="step.widthPct + '%'"
+                 [style.background]="step.color + (step.widthPct === 0 ? '44' : 'cc')">
+              <div class="funnel__bar-icon" [style.background]="step.color">
+                @switch (step.icon) {
+                  @case ('eye') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  }
+                  @case ('cursor') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 3l14 9-7 2-2 7-5-18z"/>
+                    </svg>
+                  }
+                  @case ('cart') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                    </svg>
+                  }
+                  @case ('check') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  }
+                }
+              </div>
+              <span class="funnel__bar-label">{{ step.label }}</span>
+              <span class="funnel__bar-value">{{ formatNum(step.value) }}</span>
+            </div>
+          </div>
+
+          <!-- Drop-off indicator -->
+          @if (!last) {
+            <div class="funnel__dropoff">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="funnel__dropoff-arrow">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+              <span class="funnel__dropoff-pct">−{{ step.dropOff }}%</span>
+            </div>
+          }
+        </div>
+
+      }
+    </div>
+
+    <!-- Step summary table -->
+    <div class="funnel-table">
+      <div class="funnel-table__row funnel-table__row--head">
+        <span>Paso</span>
+        <span>Usuarios</span>
+        <span>% del total</span>
+        <span>Caída</span>
+      </div>
+      @for (step of funnel(); track step.key) {
+        <div class="funnel-table__row">
+          <span class="funnel-table__step-name">
+            <span class="funnel-table__dot" [style.background]="step.color"></span>
+            {{ step.label }}
+          </span>
+          <span class="funnel-table__num">{{ formatNum(step.value) }}</span>
+          <span class="funnel-table__pct">{{ step.widthPct }}%</span>
+          <span class="funnel-table__drop" [class.funnel-table__drop--zero]="step.dropOff === 0">
+            {{ step.dropOff > 0 ? '−' + step.dropOff + '%' : '—' }}
+          </span>
+        </div>
+      }
+    </div>
+
+  </div>
+
+</div>

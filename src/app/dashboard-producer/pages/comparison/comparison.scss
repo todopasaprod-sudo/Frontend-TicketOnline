@@ -1,0 +1,253 @@
+$purple-400: #c084fc;
+$purple-500: #a855f7;
+$purple-600: #9333ea;
+$bg-card:    #160d2e;
+$border:     rgba(168, 85, 247, 0.18);
+$text-main:  #f3f0ff;
+$text-muted: #9ca3af;
+
+$color-a: #6366f1;
+$color-b: #a855f7;
+
+.comp {
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $text-main;
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  &__sub {
+    font-size: 0.875rem;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__selectors {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+}
+
+// ================================
+// Period selectors
+// ================================
+.period-sel {
+  flex: 1;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  min-width: 200px;
+
+  &--a { border-color: rgba(99,102,241,0.4); }
+  &--b { border-color: rgba(168,85,247,0.4); }
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $text-muted;
+    margin: 0 0 0.75rem;
+  }
+
+  &__btns {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    padding: 0.35rem 0.65rem;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: transparent;
+    color: $text-muted;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.18s;
+
+    &:hover:not(:disabled) { color: $text-main; border-color: rgba(255,255,255,0.2); }
+
+    &:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    .period-sel--a &--active {
+      background: rgba(99,102,241,0.2);
+      border-color: rgba(99,102,241,0.55);
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .period-sel--b &--active {
+      background: rgba(168,85,247,0.2);
+      border-color: rgba(168,85,247,0.55);
+      color: $purple-400;
+      font-weight: 600;
+    }
+  }
+
+  &__vs {
+    font-size: 1rem;
+    font-weight: 900;
+    color: $text-muted;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+  }
+}
+
+// ================================
+// KPI comparison grid
+// ================================
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+}
+
+.comp-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+
+  &:hover { border-color: rgba(168,85,247,0.3); }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg { width: 18px; height: 18px; }
+  }
+
+  &__body { flex: 1; min-width: 0; }
+
+  &__label {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0 0 0.75rem;
+    font-weight: 500;
+  }
+}
+
+// ================================
+// Dual bar
+// ================================
+.dual-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  &__tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    width: 24px;
+    flex-shrink: 0;
+
+    &--a { color: #a5b4fc; }
+    &--b { color: $purple-400; }
+  }
+
+  &__track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.5s ease;
+
+    &--a { background: $color-a; }
+    &--b { background: $color-b; }
+  }
+
+  &__val {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: $text-main;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    width: 80px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+}
+
+// ================================
+// Delta badge
+// ================================
+.delta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(107,114,128,0.12);
+  color: $text-muted;
+
+  svg { width: 11px; height: 11px; }
+
+  &__sub {
+    font-weight: 400;
+    opacity: 0.6;
+    font-size: 0.65rem;
+  }
+
+  &--up {
+    background: rgba(16,185,129,0.12);
+    color: #34d399;
+  }
+
+  &--down {
+    background: rgba(248,113,113,0.12);
+    color: #f87171;
+  }
+
+  &--neutral {
+    color: $text-muted;
+  }
+}

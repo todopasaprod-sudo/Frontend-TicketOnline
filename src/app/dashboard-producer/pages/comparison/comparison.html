@@ -1,0 +1,131 @@
+<div class="comp">
+
+  <!-- Header -->
+  <div class="comp__header">
+    <div>
+      <h2 class="comp__title">Comparación de períodos</h2>
+      <p class="comp__sub">Compará el rendimiento entre dos meses distintos</p>
+    </div>
+  </div>
+
+  <!-- Period selectors -->
+  <div class="comp__selectors">
+
+    <div class="period-sel period-sel--a">
+      <p class="period-sel__label">Período A</p>
+      <div class="period-sel__btns">
+        @for (p of periods; track p; let i = $index) {
+          <button
+            class="period-sel__btn"
+            [class.period-sel__btn--active]="periodA() === i"
+            [disabled]="periodB() === i"
+            (click)="selectA(i)">
+            {{ p }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="period-sel__vs">VS</div>
+
+    <div class="period-sel period-sel--b">
+      <p class="period-sel__label">Período B</p>
+      <div class="period-sel__btns">
+        @for (p of periods; track p; let i = $index) {
+          <button
+            class="period-sel__btn"
+            [class.period-sel__btn--active]="periodB() === i"
+            [disabled]="periodA() === i"
+            (click)="selectB(i)">
+            {{ p }}
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- KPI comparisons -->
+  <div class="comp-grid">
+    @for (kpi of kpiComparisons(); track kpi.label) {
+      <div class="comp-card">
+
+        <div class="comp-card__icon" [style.background]="kpi.iconBg" [style.color]="kpi.iconColor">
+          @switch (kpi.icon) {
+            @case ('money') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+              </svg>
+            }
+            @case ('ticket') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 9a3 3 0 010-6h20a3 3 0 010 6"/>
+                <path d="M2 15a3 3 0 000 6h20a3 3 0 000-6"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+              </svg>
+            }
+            @case ('percent') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="5" x2="5" y2="19"/>
+                <circle cx="6.5" cy="6.5" r="2.5"/>
+                <circle cx="17.5" cy="17.5" r="2.5"/>
+              </svg>
+            }
+            @case ('tag') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            }
+          }
+        </div>
+
+        <div class="comp-card__body">
+          <p class="comp-card__label">{{ kpi.label }}</p>
+
+          <!-- Dual bar -->
+          <div class="dual-bar">
+            <div class="dual-bar__row">
+              <span class="dual-bar__tag dual-bar__tag--a">{{ periods[periodA()] }}</span>
+              <div class="dual-bar__track">
+                <div class="dual-bar__fill dual-bar__fill--a" [style.width]="kpi.barA + '%'"></div>
+              </div>
+              <span class="dual-bar__val">{{ kpi.valueA }}</span>
+            </div>
+            <div class="dual-bar__row">
+              <span class="dual-bar__tag dual-bar__tag--b">{{ periods[periodB()] }}</span>
+              <div class="dual-bar__track">
+                <div class="dual-bar__fill dual-bar__fill--b" [style.width]="kpi.barB + '%'"></div>
+              </div>
+              <span class="dual-bar__val">{{ kpi.valueB }}</span>
+            </div>
+          </div>
+
+          <!-- Delta badge -->
+          <div class="delta-badge"
+               [class.delta-badge--up]="kpi.delta > 0"
+               [class.delta-badge--down]="kpi.delta < 0"
+               [class.delta-badge--neutral]="kpi.delta === 0">
+            @if (kpi.delta > 0) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+              +{{ kpi.delta }}%
+            } @else if (kpi.delta < 0) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+              {{ kpi.delta }}%
+            } @else {
+              Sin cambio
+            }
+            <span class="delta-badge__sub">A→B</span>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+
+</div>
