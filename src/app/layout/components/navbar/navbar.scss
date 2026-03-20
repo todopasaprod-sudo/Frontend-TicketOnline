@@ -1,10 +1,5 @@
-$blue-400:   #47bcff;
-$blue-500:   #21a9ff;
-$blue-600:   #0088d4;
-$bg-dark:    #040f1c;
-$border:     rgba(33, 169, 255, 0.2);
-$text-main:  #edf6ff;
-$text-muted: #8ba8be;
+@use 'variables' as *;
+
 
 .navbar {
   position: sticky;

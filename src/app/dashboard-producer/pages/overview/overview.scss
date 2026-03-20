@@ -1,10 +1,4 @@
-$blue-400:   #47bcff;
-$blue-500:   #21a9ff;
-$blue-600:   #0088d4;
-$bg-card:    #071525;
-$border:     rgba(33, 169, 255, 0.18);
-$text-main:  #edf6ff;
-$text-muted: #8ba8be;
+@use 'variables' as *;
 
 .overview {
   max-width: 1100px;

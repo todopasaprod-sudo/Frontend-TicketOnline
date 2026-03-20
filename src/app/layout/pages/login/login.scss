@@ -1,15 +1,4 @@
-// ===========================
-// Variables
-// ===========================
-$blue-400:   #47bcff;
-$blue-500:   #21a9ff;
-$blue-600:   #0088d4;
-$bg-dark:    #040f1c;
-$bg-input:   #0a1e33;
-$border:     rgba(33, 169, 255, 0.25);
-$text-main:  #edf6ff;
-$text-muted: #8ba8be;
-$red:        #f87171;
+@use 'variables' as *;
 
 // ===========================
 // Page layout

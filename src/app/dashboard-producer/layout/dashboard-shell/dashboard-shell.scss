@@ -1,22 +1,4 @@
-// $blue-400:   #47bcff;
-// $blue-500:   #21a9ff;
-// $blue-600:   #0088d4;
-// $bg-dark:    #040f1c;
-// $bg-sidebar: #020b14;
-// $border:     rgba(33, 169, 255, 0.18);
-// $text-main:  #edf6ff;
-// $text-muted: #8ba8be;
-// $sidebar-w:  240px;
-
-$blue-400:   #47bcff;
-$blue-500:   #21a9ff;
-$blue-600:   #0088d4;
-$bg-dark:    #040f1c;
-$bg-sidebar: #020b14;
-$border:     rgba(33, 169, 255, 0.18);
-$text-main:  #edf6ff;
-$text-muted: #8ba8be;
-$sidebar-w:  240px;
+@use 'variables' as *;
 
 
 // ================================
