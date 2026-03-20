@@ -1,10 +1,10 @@
-$purple-400: #c084fc;
-$purple-500: #a855f7;
-$purple-600: #9333ea;
-$bg-dark:    #0f0a1e;
-$border:     rgba(168, 85, 247, 0.2);
-$text-main:  #f3f0ff;
-$text-muted: #9ca3af;
+$blue-400:   #47bcff;
+$blue-500:   #21a9ff;
+$blue-600:   #0088d4;
+$bg-dark:    #040f1c;
+$border:     rgba(33, 169, 255, 0.2);
+$text-main:  #edf6ff;
+$text-muted: #8ba8be;
 
 .navbar {
   position: sticky;
@@ -120,7 +120,7 @@ $text-muted: #9ca3af;
     }
 
     &--primary {
-      background: linear-gradient(135deg, $purple-600, $purple-500);
+      background: linear-gradient(135deg, $blue-600, $blue-500);
       color: #fff;
       box-shadow: 0 2px 12px rgba(168,85,247,0.3);
 

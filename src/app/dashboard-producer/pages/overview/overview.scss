@@ -1,10 +1,10 @@
-$purple-400: #c084fc;
-$purple-500: #a855f7;
-$purple-600: #9333ea;
-$bg-card:    #160d2e;
-$border:     rgba(168, 85, 247, 0.18);
-$text-main:  #f3f0ff;
-$text-muted: #9ca3af;
+$blue-400:   #47bcff;
+$blue-500:   #21a9ff;
+$blue-600:   #0088d4;
+$bg-card:    #071525;
+$border:     rgba(33, 169, 255, 0.18);
+$text-main:  #edf6ff;
+$text-muted: #8ba8be;
 
 .overview {
   max-width: 1100px;
@@ -37,7 +37,7 @@ $text-muted: #9ca3af;
     align-items: center;
     gap: 0.5rem;
     padding: 0.65rem 1.25rem;
-    background: linear-gradient(135deg, $purple-600, $purple-500);
+    background: linear-gradient(135deg, $blue-600, $blue-500);
     color: #fff;
     text-decoration: none;
     border-radius: 10px;
@@ -95,7 +95,7 @@ $text-muted: #9ca3af;
     align-items: center;
     gap: 0.35rem;
     font-size: 0.82rem;
-    color: $purple-400;
+    color: $blue-400;
     text-decoration: none;
     transition: color 0.2s;
 
@@ -252,7 +252,7 @@ $text-muted: #9ca3af;
   &__edit {
     font-size: 0.78rem;
     font-weight: 600;
-    color: $purple-400;
+    color: $blue-400;
     text-decoration: none;
     transition: color 0.2s;
     white-space: nowrap;
@@ -273,7 +273,7 @@ $text-muted: #9ca3af;
 
   &__fill {
     height: 100%;
-    background: linear-gradient(90deg, $purple-600, $purple-500);
+    background: linear-gradient(90deg, $blue-600, $blue-500);
     border-radius: 99px;
     transition: width 0.4s ease;
   }

@@ -60,6 +60,11 @@ export const DASHBOARD_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/geography/geography').then(m => m.Geography),
       },
+      {
+        path: 'estadisticas/entradas',
+        loadComponent: () =>
+          import('./pages/ticket-breakdown/ticket-breakdown').then(m => m.TicketBreakdown),
+      },
     ],
   },
 ];

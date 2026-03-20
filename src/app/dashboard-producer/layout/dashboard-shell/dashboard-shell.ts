@@ -1,6 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 
 @Component({
@@ -11,6 +11,7 @@ import { filter, map, startWith } from 'rxjs';
 })
 export class DashboardShell {
   sidebarOpen = signal(true);
+  statsOpen   = signal(this.isStatsUrl(inject(Router).url));
 
   private router = inject(Router);
 
@@ -23,8 +24,25 @@ export class DashboardShell {
     { initialValue: this.getTitleFromUrl(this.router.url) }
   );
 
+  constructor() {
+    // Auto-open stats group when navigating to any stats sub-route
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      takeUntilDestroyed()
+    ).subscribe(e => {
+      if ((e as NavigationEnd).url.includes('/estadisticas/')) {
+        this.statsOpen.set(true);
+      }
+    });
+  }
+
   toggleSidebar() { this.sidebarOpen.update(v => !v); }
-  closeSidebar() { this.sidebarOpen.set(false); }
+  closeSidebar()  { this.sidebarOpen.set(false); }
+  toggleStats()   { this.statsOpen.update(v => !v); }
+
+  private isStatsUrl(url: string): boolean {
+    return url.includes('/estadisticas/');
+  }
 
   private getTitleFromUrl(url: string): string {
     if (url.includes('/nuevo')) return 'Crear Evento';
@@ -37,6 +55,7 @@ export class DashboardShell {
     if (url.includes('/estadisticas/comparacion')) return 'Comparación de períodos';
     if (url.includes('/estadisticas/forecast')) return 'Proyección de ventas';
     if (url.includes('/estadisticas/geografia')) return 'Geografía de compradores';
+    if (url.includes('/estadisticas/entradas')) return 'Tipos de entrada';
     return 'Dashboard';
   }
 }

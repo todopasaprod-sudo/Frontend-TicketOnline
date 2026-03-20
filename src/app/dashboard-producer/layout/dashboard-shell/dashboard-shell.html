@@ -45,28 +45,36 @@
         </a>
 
         <div class="sidebar__group">
-          <div class="sidebar__group-header">
+          <button class="sidebar__group-header" (click)="toggleStats()"
+                  [class.sidebar__group-header--open]="statsOpen()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="20" x2="18" y2="10"/>
               <line x1="12" y1="20" x2="12" y2="4"/>
               <line x1="6" y1="20" x2="6" y2="14"/>
             </svg>
             <span>Estadísticas</span>
-          </div>
-          <div class="sidebar__subnav">
-            <a routerLink="estadisticas/resumen" routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Resumen</a>
-            <a routerLink="estadisticas/ventas" routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Velocidad de ventas</a>
-            <a routerLink="estadisticas/embudo" routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Embudo</a>
-            <a routerLink="estadisticas/comparacion" routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Comparación</a>
-            <a routerLink="estadisticas/forecast" routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Proyección</a>
-            <a routerLink="estadisticas/geografia" routerLinkActive="active"
-               [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Geografía</a>
-          </div>
+            <svg class="sidebar__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+          @if (statsOpen()) {
+            <div class="sidebar__subnav">
+              <a routerLink="estadisticas/resumen" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Resumen</a>
+              <a routerLink="estadisticas/ventas" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Velocidad de ventas</a>
+              <a routerLink="estadisticas/embudo" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Embudo</a>
+              <a routerLink="estadisticas/comparacion" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Comparación</a>
+              <a routerLink="estadisticas/forecast" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Proyección</a>
+              <a routerLink="estadisticas/geografia" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Geografía</a>
+              <a routerLink="estadisticas/entradas" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}" class="sidebar__sublink">Tipos de entrada</a>
+            </div>
+          }
         </div>
 
         <p class="sidebar__section-label">Acciones</p>

@@ -1,10 +1,10 @@
-$purple-400: #c084fc;
-$purple-500: #a855f7;
-$purple-600: #9333ea;
-$bg-card:    #160d2e;
-$border:     rgba(168, 85, 247, 0.2);
-$text-main:  #f3f0ff;
-$text-muted: #9ca3af;
+$blue-400:   #47bcff;
+$blue-500:   #21a9ff;
+$blue-600:   #0088d4;
+$bg-card:    #071525;
+$border:     rgba(33, 169, 255, 0.2);
+$text-main:  #edf6ff;
+$text-muted: #8ba8be;
 
 .event-card {
   background: $bg-card;
@@ -68,7 +68,7 @@ $text-muted: #9ca3af;
     border-radius: 99px;
 
     &--new {
-      background: linear-gradient(135deg, $purple-600, $purple-500);
+      background: linear-gradient(135deg, $blue-600, $blue-500);
       color: #fff;
     }
 
@@ -133,7 +133,7 @@ $text-muted: #9ca3af;
     font-size: 0.78rem;
     color: $text-muted;
 
-    svg { width: 13px; height: 13px; flex-shrink: 0; color: $purple-400; }
+    svg { width: 13px; height: 13px; flex-shrink: 0; color: $blue-400; }
 
     span {
       overflow: hidden;
@@ -163,7 +163,7 @@ $text-muted: #9ca3af;
 
   &__cta {
     padding: 0.4rem 0.9rem;
-    background: linear-gradient(135deg, $purple-600, $purple-500);
+    background: linear-gradient(135deg, $blue-600, $blue-500);
     color: #fff;
     border: none;
     border-radius: 8px;

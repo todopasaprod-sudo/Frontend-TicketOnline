@@ -1,0 +1,197 @@
+<div class="tb">
+
+  <!-- Header -->
+  <div class="tb__header">
+    <div>
+      <h2 class="tb__title">Tipos de entrada</h2>
+      <p class="tb__sub">Rendimiento por categoría de ticket</p>
+    </div>
+  </div>
+
+  <!-- Event picker -->
+  <div class="event-picker">
+    @for (ev of events; track ev.id) {
+      <button
+        class="event-picker__btn"
+        [class.event-picker__btn--active]="selectedEventId() === ev.id"
+        (click)="selectEvent(ev.id)">
+        <span class="event-picker__dot" [style.background]="ev.gradient"></span>
+        {{ ev.title.length > 24 ? ev.title.substring(0, 24) + '…' : ev.title }}
+      </button>
+    }
+  </div>
+
+  <!-- KPI cards -->
+  <div class="tb-kpis">
+    <div class="tb-kpi">
+      <p class="tb-kpi__label">Revenue total</p>
+      <p class="tb-kpi__value">{{ formatMoney(totalRevenue()) }}</p>
+      <p class="tb-kpi__sub">{{ formatNum(totalSold()) }} tickets vendidos</p>
+    </div>
+    <div class="tb-kpi">
+      <p class="tb-kpi__label">Precio promedio</p>
+      <p class="tb-kpi__value">{{ avgPrice() > 0 ? formatMoney(avgPrice()) : 'Gratis' }}</p>
+      <p class="tb-kpi__sub">precio ponderado</p>
+    </div>
+    <div class="tb-kpi">
+      <p class="tb-kpi__label">Ocupación global</p>
+      <p class="tb-kpi__value tb-kpi__value--pct">{{ globalOccupancy() }}<span>%</span></p>
+      <p class="tb-kpi__sub">{{ formatNum(totalCap()) }} capacidad total</p>
+    </div>
+    <div class="tb-kpi">
+      <p class="tb-kpi__label">Categoría líder</p>
+      @if (topTier(); as t) {
+        <p class="tb-kpi__value tb-kpi__value--name" [style.color]="t.color">{{ t.name }}</p>
+        <p class="tb-kpi__sub">{{ formatNum(t.sold) }} unidades</p>
+      } @else {
+        <p class="tb-kpi__value">—</p>
+      }
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="tb__charts">
+
+    <!-- Left: revenue donut -->
+    <div class="chart-card">
+      <div class="chart-card__header">
+        <p class="chart-card__title">Distribución de ingresos</p>
+        <p class="chart-card__sub">por tipo de ticket</p>
+      </div>
+
+      @if (totalRevenue() > 0) {
+        <div class="donut-wrap">
+          <svg viewBox="0 0 180 180" class="donut-svg">
+            <g transform="rotate(-90, 90, 90)">
+              @for (seg of donutSegments(); track $index) {
+                <circle
+                  cx="90" cy="90" r="70"
+                  fill="none"
+                  [attr.stroke]="seg.color"
+                  stroke-width="26"
+                  [attr.stroke-dasharray]="seg.dashArray"
+                  [attr.stroke-dashoffset]="seg.dashOffset"/>
+              }
+            </g>
+            <text x="90" y="84" text-anchor="middle" class="donut-label">Revenue</text>
+            <text x="90" y="103" text-anchor="middle" class="donut-value">{{ formatMoney(totalRevenue()) }}</text>
+          </svg>
+        </div>
+
+        <div class="donut-legend">
+          @for (row of rows(); track row.name) {
+            <div class="donut-legend__item">
+              <span class="donut-legend__dot" [style.background]="row.color"></span>
+              <span class="donut-legend__name">{{ row.name }}</span>
+              <span class="donut-legend__pct">{{ row.revenuePct }}%</span>
+              <span class="donut-legend__val">{{ formatMoney(row.revenue) }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="tb__empty">
+          <p>Sin ventas registradas para este evento.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Right: occupancy bars -->
+    <div class="chart-card">
+      <div class="chart-card__header">
+        <p class="chart-card__title">Ocupación por categoría</p>
+        <p class="chart-card__sub">vendido vs. capacidad</p>
+      </div>
+
+      <div class="tier-bars">
+        @for (row of rows(); track row.name) {
+          <div class="tier-bar">
+            <div class="tier-bar__top">
+              <div class="tier-bar__label">
+                <span class="tier-bar__dot" [style.background]="row.color"></span>
+                <span class="tier-bar__name">{{ row.name }}</span>
+              </div>
+              <div class="tier-bar__stats">
+                <span class="tier-bar__pct" [style.color]="row.color">{{ row.occupancyPct }}%</span>
+                <span class="tier-bar__count">{{ formatNum(row.sold) }}/{{ formatNum(row.capacity) }}</span>
+              </div>
+            </div>
+            <div class="tier-bar__track">
+              <div class="tier-bar__fill"
+                   [style.width.%]="row.occupancyPct"
+                   [style.background]="row.color"></div>
+            </div>
+            <div class="tier-bar__bottom">
+              <span class="tier-bar__price">{{ row.price > 0 ? formatMoney(row.price) + ' c/u' : 'Gratis' }}</span>
+              <span class="tier-bar__revenue">{{ formatMoney(row.revenue) }} revenue</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Detail table -->
+  <div class="tb-table-card">
+    <div class="tb-table-card__header">
+      <p class="tb-table-card__title">Detalle completo</p>
+    </div>
+    <div class="table-wrap">
+      <table class="tb-table">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Vendidos</th>
+            <th>Restantes</th>
+            <th>Capacidad</th>
+            <th>Ocupación</th>
+            <th>Revenue</th>
+            <th>% Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.name) {
+            <tr>
+              <td>
+                <div class="tb-table__name-cell">
+                  <span class="tb-table__dot" [style.background]="row.color"></span>
+                  {{ row.name }}
+                </div>
+              </td>
+              <td class="tb-table__num">{{ row.price > 0 ? formatMoney(row.price) : 'Gratis' }}</td>
+              <td class="tb-table__num tb-table__num--hi">{{ formatNum(row.sold) }}</td>
+              <td class="tb-table__num">{{ formatNum(row.remaining) }}</td>
+              <td class="tb-table__num">{{ formatNum(row.capacity) }}</td>
+              <td>
+                <div class="tb-table__occ">
+                  <div class="tb-table__occ-bar">
+                    <div class="tb-table__occ-fill"
+                         [style.width.%]="row.occupancyPct"
+                         [style.background]="row.color"></div>
+                  </div>
+                  <span class="tb-table__occ-pct" [style.color]="row.color">{{ row.occupancyPct }}%</span>
+                </div>
+              </td>
+              <td class="tb-table__num tb-table__num--green">{{ formatMoney(row.revenue) }}</td>
+              <td class="tb-table__num">{{ row.revenuePct }}%</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="tb-table__total-label">TOTAL</td>
+            <td>—</td>
+            <td class="tb-table__num tb-table__num--hi">{{ formatNum(totalSold()) }}</td>
+            <td class="tb-table__num">{{ formatNum(totalCap() - totalSold()) }}</td>
+            <td class="tb-table__num">{{ formatNum(totalCap()) }}</td>
+            <td class="tb-table__num">{{ globalOccupancy() }}%</td>
+            <td class="tb-table__num tb-table__num--green">{{ formatMoney(totalRevenue()) }}</td>
+            <td class="tb-table__num">100%</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>

@@ -19,6 +19,55 @@ export const PERIOD_DATA: PeriodStat[] = [
   { ingresos: 680000,  tickets: 380, ocupacion: 58, promedio: 1789, trend: { ingresos: -45, tickets: -47, ocupacion: -14,promedio: +3  } },
 ];
 
+// ============================================================
+// Ticket breakdown data
+// ============================================================
+export interface TicketType {
+  name: string;
+  price: number; // 0 = free
+  capacity: number;
+  sold: number;
+  color: string;
+}
+
+export const TICKET_DATA: Record<number, TicketType[]> = {
+  1: [ // Lollapalooza
+    { name: 'Campo General',     price: 55000,  capacity: 3000, sold: 2180, color: '#21a9ff' },
+    { name: 'Campo VIP',         price: 130000, capacity: 1500, sold: 820,  color: '#6366f1' },
+    { name: 'Palco Corporativo', price: 380000, capacity: 500,  sold: 200,  color: '#f59e0b' },
+  ],
+  2: [ // Cosquín Rock
+    { name: 'General', price: 35000,  capacity: 1200, sold: 1100, color: '#21a9ff' },
+    { name: 'VIP',     price: 75000,  capacity: 500,  sold: 360,  color: '#6366f1' },
+    { name: 'Gold',    price: 140000, capacity: 300,  sold: 80,   color: '#f59e0b' },
+  ],
+  3: [ // Stand Up Night
+    { name: 'Platea', price: 18000, capacity: 800, sold: 0, color: '#21a9ff' },
+  ],
+  4: [ // El Rey León
+    { name: 'Platea Alta', price: 15000, capacity: 600, sold: 580, color: '#21a9ff' },
+    { name: 'Platea Baja', price: 28000, capacity: 400, sold: 320, color: '#6366f1' },
+    { name: 'Palco',       price: 55000, capacity: 200, sold: 80,  color: '#10b981' },
+  ],
+  5: [ // River vs Boca
+    { name: 'Platea Local',    price: 28000, capacity: 2000, sold: 2000, color: '#21a9ff' },
+    { name: 'Platea Visitante',price: 28000, capacity: 1500, sold: 1500, color: '#6366f1' },
+    { name: 'Palco Premium',   price: 85000, capacity: 500,  sold: 500,  color: '#f59e0b' },
+  ],
+  6: [ // Jazz Festival
+    { name: 'General (Gratis)', price: 0, capacity: 1500, sold: 0, color: '#21a9ff' },
+  ],
+  7: [ // Nicki Nicole
+    { name: 'General',  price: 22000,  capacity: 2000, sold: 620, color: '#21a9ff' },
+    { name: 'VIP',      price: 55000,  capacity: 800,  sold: 200, color: '#6366f1' },
+    { name: 'Platinum', price: 120000, capacity: 200,  sold: 50,  color: '#f59e0b' },
+  ],
+  8: [ // Feria del Vino
+    { name: 'General (Gratis)', price: 0,     capacity: 1500, sold: 1500, color: '#21a9ff' },
+    { name: 'Premium',          price: 15000, capacity: 600,  sold: 600,  color: '#6366f1' },
+  ],
+};
+
 /** Datos del funnel por evento (views → clicks → checkouts → purchases) */
 export const FUNNEL_DATA: Record<number, { views: number; clicks: number; checkouts: number; purchases: number }> = {
   1: { views: 14800, clicks: 8880,  checkouts: 4144, purchases: 3200 },

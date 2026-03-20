@@ -1,10 +1,10 @@
-$purple-400: #c084fc;
-$purple-500: #a855f7;
-$purple-600: #9333ea;
-$bg-card:    #160d2e;
-$border:     rgba(168, 85, 247, 0.18);
-$text-main:  #f3f0ff;
-$text-muted: #9ca3af;
+$blue-400:   #47bcff;
+$blue-500:   #21a9ff;
+$blue-600:   #0088d4;
+$bg-card:    #071525;
+$border:     rgba(33, 169, 255, 0.18);
+$text-main:  #edf6ff;
+$text-muted: #8ba8be;
 
 .analytics {
   max-width: 1100px;
@@ -69,7 +69,7 @@ $text-muted: #9ca3af;
     &:hover { color: $text-main; }
 
     &--active {
-      background: linear-gradient(135deg, $purple-600, $purple-500);
+      background: linear-gradient(135deg, $blue-600, $blue-500);
       color: #fff;
       font-weight: 600;
       box-shadow: 0 2px 8px rgba(168,85,247,0.35);
@@ -200,7 +200,7 @@ $text-muted: #9ca3af;
     cursor: pointer;
 
     &--active .bar-chart__bar {
-      background: linear-gradient(to top, $purple-600, $purple-400) !important;
+      background: linear-gradient(to top, $blue-600, $blue-400) !important;
       box-shadow: 0 0 18px rgba(168,85,247,0.4);
     }
   }
