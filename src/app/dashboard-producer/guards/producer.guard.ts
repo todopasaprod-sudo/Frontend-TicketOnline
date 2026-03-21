@@ -1,7 +1,13 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 
 export const producerGuard: CanActivateFn = () => {
-  // TODO: inject AuthService y verificar rol productor
-  // Ejemplo: return inject(AuthService).hasRole('producer');
-  return true;
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  const role = auth.currentUser()?.role;
+  if (role === 'Organizer' || role === 'Admin') return true;
+
+  return router.createUrlTree(['/eventos']);
 };

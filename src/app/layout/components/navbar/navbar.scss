@@ -358,6 +358,15 @@
       color: $text-main;
     }
 
+    &--dashboard {
+      color: #a78bfa;
+
+      &:hover {
+        background: rgba(139, 92, 246, 0.1);
+        color: #c4b5fd;
+      }
+    }
+
     &--logout {
       color: $red;
 

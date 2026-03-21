@@ -1,4 +1,4 @@
-import { Component, signal, inject, HostListener, ElementRef } from '@angular/core';
+import { Component, signal, computed, inject, HostListener, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 
@@ -14,6 +14,10 @@ export class Navbar {
   private el = inject(ElementRef);
 
   currentUser = this.authService.currentUser;
+  canAccessDashboard = computed(() => {
+    const role = this.authService.currentUser()?.role;
+    return role === 'Organizer' || role === 'Admin';
+  });
   menuOpen = signal(false);
   searchOpen = signal(false);
   dropdownOpen = signal(false);

@@ -53,6 +53,16 @@
                 </svg>
                 Mis Datos
               </a>
+              @if (canAccessDashboard()) {
+                <div class="navbar__dropdown-divider"></div>
+                <a routerLink="/dashboard" class="navbar__dropdown-item navbar__dropdown-item--dashboard" (click)="dropdownOpen.set(false)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                  Panel de Productor
+                </a>
+              }
               <div class="navbar__dropdown-divider"></div>
               <button class="navbar__dropdown-item navbar__dropdown-item--logout" (click)="logout()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -118,6 +128,9 @@
           </div>
           <a routerLink="/mis-tickets" class="navbar__mobile-link" (click)="toggleMenu()">Mis Tickets</a>
           <a routerLink="/mis-datos" class="navbar__mobile-link" (click)="toggleMenu()">Mis Datos</a>
+          @if (canAccessDashboard()) {
+            <a routerLink="/dashboard" class="navbar__mobile-link" (click)="toggleMenu()">Panel de Productor</a>
+          }
           <button class="navbar__mobile-link navbar__mobile-link--logout" (click)="logout(); toggleMenu()">Cerrar sesión</button>
         </div>
       } @else {
