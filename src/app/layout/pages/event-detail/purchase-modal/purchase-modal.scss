@@ -1,0 +1,514 @@
+@use 'variables' as *;
+
+// ── Overlay ───────────────────────────────────────────────────────────────────
+.purchase-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+// ── Modal container ───────────────────────────────────────────────────────────
+.purchase-modal {
+  background: #0f0a1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.22s ease;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.3rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+
+    svg { width: 18px; height: 18px; }
+    &:hover { color: $text-main; background: rgba(255,255,255,0.06); }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    flex-shrink: 0;
+  }
+
+  &__loading {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.85rem;
+    padding: 1rem 0;
+  }
+
+  &__step { display: flex; flex-direction: column; gap: 1.25rem; }
+}
+
+// ── Step indicator ────────────────────────────────────────────────────────────
+.purchase-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  margin-right: 1rem;
+
+  &__line {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    transition: background 0.3s;
+
+    &--done { background: $blue-500; }
+  }
+}
+
+.purchase-step {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+
+  &--active { opacity: 1; }
+  &--done { opacity: 0.75; }
+
+  &__num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $text-muted;
+    flex-shrink: 0;
+    transition: background 0.3s, border-color 0.3s;
+
+    .purchase-step--active & {
+      background: $blue-500;
+      border-color: $blue-500;
+      color: #fff;
+    }
+
+    .purchase-step--done & {
+      background: rgba($blue-500, 0.25);
+      border-color: $blue-500;
+      color: $blue-400;
+    }
+  }
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: $text-muted;
+    white-space: nowrap;
+
+    .purchase-step--active & { color: $text-main; }
+  }
+
+  @media (max-width: 480px) {
+    &__label { display: none; }
+  }
+}
+
+// ── Order ticket (Step 1) ─────────────────────────────────────────────────────
+.order-ticket {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+
+  &__dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: $text-main;
+  }
+
+  &__badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    background: rgba(251,191,36,0.15);
+    color: #fbbf24;
+  }
+
+  &__price {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: $text-main;
+    white-space: nowrap;
+  }
+}
+
+// ── Discount ──────────────────────────────────────────────────────────────────
+.discount-section {
+  &__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $text-main;
+    margin: 0 0 0.6rem;
+  }
+
+  &__row {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  &__error {
+    font-size: 0.75rem;
+    color: #f87171;
+    margin: 0.4rem 0 0;
+  }
+}
+
+.discount-input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: $text-main;
+  font-size: 0.875rem;
+  font-family: inherit;
+  padding: 0.6rem 0.875rem;
+
+  &::placeholder { color: rgba(156,163,175,0.4); }
+  &:focus { outline: none; border-color: $blue-500; }
+}
+
+.discount-btn {
+  padding: 0.6rem 1.1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  color: $text-main;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255,255,255,0.1); }
+}
+
+// ── Price breakdown ───────────────────────────────────────────────────────────
+.price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__divider {
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+    margin: 0.25rem 0;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: $text-muted;
+
+    &--sub {
+      padding-left: 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    &--total {
+      font-size: 1rem;
+      font-weight: 800;
+      color: $text-main;
+    }
+  }
+}
+
+// ── Buyer form (Step 2) ───────────────────────────────────────────────────────
+.buyer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.buyer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  &--full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $text-muted;
+  }
+
+  input, select {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: $text-main;
+    font-size: 0.875rem;
+    font-family: inherit;
+    padding: 0.6rem 0.875rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &::placeholder { color: rgba(156,163,175,0.3); }
+    &:focus { outline: none; border-color: $blue-500; }
+    option { background: #0f0a1e; }
+  }
+
+  &--error {
+    input, select { border-color: #f87171; }
+  }
+
+  &__error {
+    font-size: 0.72rem;
+    color: #f87171;
+  }
+}
+
+// ── Confirm step (Step 3) ─────────────────────────────────────────────────────
+.confirm-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $text-main;
+  margin: 0;
+}
+
+.confirm-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.confirm-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+  }
+
+  &__value {
+    font-size: 0.875rem;
+    color: $text-main;
+    font-weight: 500;
+  }
+}
+
+.confirm-tickets {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+
+  &__title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin: 0 0 0.75rem;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-main;
+    margin-bottom: 0.75rem;
+  }
+
+  &__breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+  }
+}
+
+// ── Payment methods ───────────────────────────────────────────────────────────
+.payment-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $text-main;
+  margin: 0;
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  transition: border-color 0.18s, background 0.18s;
+
+  &:hover { border-color: rgba($blue-500, 0.4); background: rgba($blue-500, 0.04); }
+
+  &--selected {
+    border-color: $blue-500;
+    background: rgba($blue-500, 0.08);
+  }
+
+  &__logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 900;
+    flex-shrink: 0;
+
+    &--mp   { background: linear-gradient(135deg, #00b1ea, #009ee3); color: #fff; }
+    &--modo { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; }
+    &--astro{ background: linear-gradient(135deg, #f97316, #ef4444); color: #fff; }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: $text-main;
+  }
+
+  &__desc {
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+}
+
+// ── Footer buttons ────────────────────────────────────────────────────────────
+.purchase-btn {
+  padding: 0.7rem 1.75rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: opacity 0.2s, transform 0.15s;
+
+  &--primary {
+    background: linear-gradient(135deg, $blue-600, $blue-500);
+    color: #fff;
+
+    &:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    &:disabled { background: rgba(255,255,255,0.08); color: #4b5563; cursor: not-allowed; }
+  }
+
+  &--ghost {
+    background: rgba(255,255,255,0.05);
+    color: $text-muted;
+    border: 1px solid rgba(255,255,255,0.1);
+
+    &:hover { background: rgba(255,255,255,0.09); color: $text-main; }
+  }
+}
+
+// ── Terms ─────────────────────────────────────────────────────────────────────
+.confirm-terms {
+  font-size: 0.75rem;
+  color: #4b5563;
+  text-align: center;
+  margin: 0;
+
+  a { color: $blue-400; text-decoration: none; &:hover { text-decoration: underline; } }
+}

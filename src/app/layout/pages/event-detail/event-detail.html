@@ -166,12 +166,17 @@
                     </div>
                     <div class="ticket-item__action">
                       <span class="ticket-item__price">{{ formatPrice(tt.price) }}</span>
-                      <button class="ticket-item__btn"
-                              [disabled]="isSoldOut(tt) || !tt.isActive || !tt.isAvailable">
-                        @if (isSoldOut(tt)) { Agotado }
-                        @else if (!tt.isActive || !tt.isAvailable) { No disponible }
-                        @else { Comprar }
-                      </button>
+                      @if (isSoldOut(tt) || !tt.isActive || !tt.isAvailable) {
+                        <button class="ticket-item__btn" disabled>
+                          @if (isSoldOut(tt)) { Agotado } @else { No disponible }
+                        </button>
+                      } @else {
+                        <div class="ticket-qty">
+                          <button class="ticket-qty__btn" (click)="decreaseQty(tt)" [disabled]="getQty(tt.id) === 0">−</button>
+                          <span class="ticket-qty__num">{{ getQty(tt.id) }}</span>
+                          <button class="ticket-qty__btn" (click)="increaseQty(tt)" [disabled]="getQty(tt.id) >= getMaxQty(tt)">+</button>
+                        </div>
+                      }
                     </div>
                   </div>
                 }
@@ -193,4 +198,14 @@
     </div>
 
   }
+
+  @if (modalOpen() && modalTicketType() !== null) {
+    <app-purchase-modal
+      [event]="event()!"
+      [ticketType]="modalTicketType()!"
+      [quantity]="modalQuantity()"
+      (close)="closeModal()"
+    />
+  }
+
 </div>

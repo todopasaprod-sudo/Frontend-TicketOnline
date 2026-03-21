@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Navbar } from '../../components/navbar/navbar';
 import { EventService, EventDetailDto, TicketTypeDto } from '../../../core/events/event.service';
+import { PurchaseModal } from './purchase-modal/purchase-modal';
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   'Música': 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)',
@@ -19,7 +20,7 @@ const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', '
 
 @Component({
   selector: 'app-event-detail',
-  imports: [Navbar, RouterLink],
+  imports: [Navbar, RouterLink, PurchaseModal],
   templateUrl: './event-detail.html',
   styleUrl: './event-detail.scss',
 })
@@ -30,6 +31,11 @@ export class EventDetail {
   loading = signal(true);
   error = signal<string | null>(null);
   event = signal<EventDetailDto | null>(null);
+
+  quantities = signal<Record<string, number>>({});
+  modalTicketType = signal<TicketTypeDto | null>(null);
+  modalQuantity = signal(0);
+  modalOpen = computed(() => this.modalTicketType() !== null);
 
   gradient = computed(() => {
     const e = this.event();
@@ -68,6 +74,50 @@ export class EventDetail {
           this.loading.set(false);
         },
       });
+  }
+
+  getQty(id: string): number {
+    return this.quantities()[id] ?? 0;
+  }
+
+  getMaxQty(tt: TicketTypeDto): number {
+    const avail = tt.stock != null ? tt.stock - tt.soldCount : Infinity;
+    return Math.min(tt.maxPerOrder, 5, avail);
+  }
+
+  increaseQty(tt: TicketTypeDto): void {
+    const current = this.getQty(tt.id);
+    const max = this.getMaxQty(tt);
+    if (current >= max) return;
+    const next = current + 1;
+    this.quantities.update(q => ({ ...q, [tt.id]: next }));
+    if (next === 1) {
+      this.modalTicketType.set(tt);
+      this.modalQuantity.set(next);
+    } else {
+      this.modalQuantity.set(next);
+    }
+  }
+
+  decreaseQty(tt: TicketTypeDto): void {
+    const current = this.getQty(tt.id);
+    if (current <= 0) return;
+    const next = current - 1;
+    this.quantities.update(q => ({ ...q, [tt.id]: next }));
+    if (next === 0) {
+      this.modalTicketType.set(null);
+    } else {
+      this.modalQuantity.set(next);
+    }
+  }
+
+  closeModal(): void {
+    const tt = this.modalTicketType();
+    if (tt) {
+      this.quantities.update(q => ({ ...q, [tt.id]: 0 }));
+    }
+    this.modalTicketType.set(null);
+    this.modalQuantity.set(0);
   }
 
   formatPrice(price: number): string {

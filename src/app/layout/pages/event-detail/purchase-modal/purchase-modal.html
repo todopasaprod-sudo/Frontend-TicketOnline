@@ -1,0 +1,257 @@
+<div class="purchase-overlay" (click)="onOverlayClick($event)">
+  <div class="purchase-modal">
+
+    <!-- Header -->
+    <div class="purchase-modal__header">
+      <div class="purchase-steps">
+        <div class="purchase-step" [class.purchase-step--active]="currentStep() >= 1" [class.purchase-step--done]="currentStep() > 1">
+          <span class="purchase-step__num">@if (currentStep() > 1) { ✓ } @else { 1 }</span>
+          <span class="purchase-step__label">Revisa tu orden</span>
+        </div>
+        <div class="purchase-steps__line" [class.purchase-steps__line--done]="currentStep() > 1"></div>
+        <div class="purchase-step" [class.purchase-step--active]="currentStep() >= 2" [class.purchase-step--done]="currentStep() > 2">
+          <span class="purchase-step__num">@if (currentStep() > 2) { ✓ } @else { 2 }</span>
+          <span class="purchase-step__label">Ingresa tus datos</span>
+        </div>
+        <div class="purchase-steps__line" [class.purchase-steps__line--done]="currentStep() > 2"></div>
+        <div class="purchase-step" [class.purchase-step--active]="currentStep() >= 3">
+          <span class="purchase-step__num">3</span>
+          <span class="purchase-step__label">Confirma tu compra</span>
+        </div>
+      </div>
+      <button class="purchase-modal__close" (click)="onClose()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="purchase-modal__body">
+
+      <!-- ── STEP 1: Order review ─────────────────────────────────────── -->
+      @if (currentStep() === 1) {
+        <div class="purchase-modal__step">
+
+          <div class="order-ticket">
+            <div class="order-ticket__dot" [style.background]="'linear-gradient(135deg,#7c3aed,#2563eb)'"></div>
+            <div class="order-ticket__info">
+              <span class="order-ticket__name">{{ ticketType().name }}</span>
+              @if (ticketType().badge) {
+                <span class="order-ticket__badge">{{ ticketType().badge }}</span>
+              }
+            </div>
+            <span class="order-ticket__price">{{ formatPrice(ticketType().price) }}</span>
+          </div>
+
+          <!-- Discount code -->
+          <div class="discount-section">
+            <p class="discount-section__label">¿Tenés un código de descuento?</p>
+            <div class="discount-section__row">
+              <input type="text" class="discount-input" placeholder="Código"
+                     [value]="discountInput()"
+                     (input)="discountInput.set($any($event.target).value); discountError.set(null)"/>
+              <button class="discount-btn" (click)="applyDiscount()">Aplicar</button>
+            </div>
+            @if (discountError()) {
+              <p class="discount-section__error">{{ discountError() }}</p>
+            }
+          </div>
+
+          <!-- Price breakdown -->
+          <div class="price-breakdown">
+            <div class="price-breakdown__divider"></div>
+            <div class="price-breakdown__row">
+              <span>Costo de entradas:</span>
+              <span></span>
+            </div>
+            <div class="price-breakdown__row price-breakdown__row--sub">
+              <span>{{ quantity() }} x {{ ticketType().name }}</span>
+              <span>{{ formatPrice(subtotal()) }}</span>
+            </div>
+            <div class="price-breakdown__row">
+              <span>Costo del servicio:</span>
+              <span>{{ formatPrice(serviceFee()) }}</span>
+            </div>
+            <div class="price-breakdown__divider"></div>
+            <div class="price-breakdown__row price-breakdown__row--total">
+              <span>Total a pagar:</span>
+              <span>{{ formatPrice(total()) }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ── STEP 2: Buyer data ───────────────────────────────────────── -->
+      @if (currentStep() === 2) {
+        <form class="purchase-modal__step" [formGroup]="buyerForm" novalidate>
+
+          @if (loadingProfile()) {
+            <div class="purchase-modal__loading">Cargando tus datos...</div>
+          }
+
+          <div class="buyer-grid">
+            <div class="buyer-field" [class.buyer-field--error]="isInvalid('name')">
+              <label>Nombre</label>
+              <input type="text" formControlName="name"/>
+              @if (isInvalid('name')) { <span class="buyer-field__error">Requerido.</span> }
+            </div>
+            <div class="buyer-field" [class.buyer-field--error]="isInvalid('surname')">
+              <label>Apellido</label>
+              <input type="text" formControlName="surname"/>
+              @if (isInvalid('surname')) { <span class="buyer-field__error">Requerido.</span> }
+            </div>
+            <div class="buyer-field" [class.buyer-field--error]="isInvalid('identificationType')">
+              <label>Tipo de identificación</label>
+              <select formControlName="identificationType">
+                @for (t of identificationTypes; track t) {
+                  <option [value]="t">{{ t }}</option>
+                }
+              </select>
+            </div>
+            <div class="buyer-field" [class.buyer-field--error]="isInvalid('identificationValue')">
+              <label>Número de identificación</label>
+              <input type="text" formControlName="identificationValue"/>
+              @if (isInvalid('identificationValue')) { <span class="buyer-field__error">Requerido.</span> }
+            </div>
+            <div class="buyer-field buyer-field--full" [class.buyer-field--error]="isInvalid('email')">
+              <label>Mail</label>
+              <input type="email" formControlName="email"/>
+              @if (isInvalid('email')) { <span class="buyer-field__error">Email inválido.</span> }
+            </div>
+            <div class="buyer-field buyer-field--full" [class.buyer-field--error]="isInvalid('emailConfirm') || emailMismatch">
+              <label>Confirmar mail</label>
+              <input type="email" formControlName="emailConfirm"/>
+              @if (emailMismatch) { <span class="buyer-field__error">Los mails no coinciden.</span> }
+            </div>
+            <div class="buyer-field" [class.buyer-field--error]="isInvalid('phoneNumber')">
+              <label>Número de teléfono</label>
+              <input type="tel" formControlName="phoneNumber"/>
+              @if (isInvalid('phoneNumber')) { <span class="buyer-field__error">Requerido.</span> }
+            </div>
+            <div class="buyer-field" [class.buyer-field--error]="isInvalid('country')">
+              <label>País</label>
+              <select formControlName="country">
+                @for (c of countries; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+            <div class="buyer-field buyer-field--full" [class.buyer-field--error]="isInvalid('province')">
+              <label>Provincia / Ciudad</label>
+              <input type="text" formControlName="province"/>
+              @if (isInvalid('province')) { <span class="buyer-field__error">Requerido.</span> }
+            </div>
+          </div>
+        </form>
+      }
+
+      <!-- ── STEP 3: Confirm + payment ────────────────────────────────── -->
+      @if (currentStep() === 3) {
+        <div class="purchase-modal__step">
+          <p class="confirm-title">¡Ya casi es tuyo! Revisa tus datos</p>
+
+          <div class="confirm-grid">
+            <div class="confirm-item">
+              <span class="confirm-item__label">Nombre y apellido</span>
+              <span class="confirm-item__value">{{ buyerForm.get('name')?.value }} {{ buyerForm.get('surname')?.value }}</span>
+            </div>
+            <div class="confirm-item">
+              <span class="confirm-item__label">Identificación</span>
+              <span class="confirm-item__value">{{ buyerForm.get('identificationType')?.value }} - {{ buyerForm.get('identificationValue')?.value }}</span>
+            </div>
+            <div class="confirm-item">
+              <span class="confirm-item__label">Mail</span>
+              <span class="confirm-item__value">{{ buyerForm.get('email')?.value }}</span>
+            </div>
+            <div class="confirm-item">
+              <span class="confirm-item__label">Teléfono</span>
+              <span class="confirm-item__value">{{ buyerForm.get('phoneNumber')?.value }}</span>
+            </div>
+            <div class="confirm-item">
+              <span class="confirm-item__label">Nombre del evento</span>
+              <span class="confirm-item__value">{{ event().name }}</span>
+            </div>
+          </div>
+
+          <div class="confirm-tickets">
+            <p class="confirm-tickets__title">Tus entradas</p>
+            <div class="confirm-tickets__row">
+              <span>{{ quantity() }} x {{ ticketType().name }}</span>
+              <span>{{ formatPrice(subtotal()) }}</span>
+            </div>
+            <div class="confirm-tickets__breakdown">
+              <div class="price-breakdown__row">
+                <span>Costo total de entradas:</span>
+                <span>{{ formatPrice(subtotal()) }}</span>
+              </div>
+              <div class="price-breakdown__row">
+                <span>Costo de servicio:</span>
+                <span>{{ formatPrice(serviceFee()) }}</span>
+              </div>
+              <div class="price-breakdown__divider"></div>
+              <div class="price-breakdown__row price-breakdown__row--total">
+                <span>Total a pagar:</span>
+                <span>{{ formatPrice(total()) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment methods -->
+          <p class="payment-title">Elegí el medio de pago</p>
+          <div class="payment-methods">
+            <button class="payment-method" [class.payment-method--selected]="selectedPayment() === 'mercadopago'"
+                    (click)="selectPayment('mercadopago')">
+              <div class="payment-method__logo payment-method__logo--mp">MP</div>
+              <div class="payment-method__info">
+                <span class="payment-method__name">Mercado Pago</span>
+                <span class="payment-method__desc">Tarjeta de crédito, débito o dinero en cuenta</span>
+              </div>
+            </button>
+            <button class="payment-method" [class.payment-method--selected]="selectedPayment() === 'modo'"
+                    (click)="selectPayment('modo')">
+              <div class="payment-method__logo payment-method__logo--modo">M</div>
+              <div class="payment-method__info">
+                <span class="payment-method__name">MODO</span>
+                <span class="payment-method__desc">Hasta 6 cuotas</span>
+              </div>
+            </button>
+            <button class="payment-method" [class.payment-method--selected]="selectedPayment() === 'astropay'"
+                    (click)="selectPayment('astropay')">
+              <div class="payment-method__logo payment-method__logo--astro">A</div>
+              <div class="payment-method__info">
+                <span class="payment-method__name">AstroPay</span>
+                <span class="payment-method__desc">Hasta 50% de reintegro · hasta $20.000 por persona</span>
+              </div>
+            </button>
+          </div>
+
+          <p class="confirm-terms">
+            Al hacer la orden estás aceptando nuestros
+            <a href="#">términos y condiciones</a>
+          </p>
+        </div>
+      }
+
+    </div>
+
+    <!-- Footer: navigation buttons -->
+    <div class="purchase-modal__footer">
+      @if (currentStep() > 1) {
+        <button class="purchase-btn purchase-btn--ghost" (click)="prevStep()">Anterior</button>
+      } @else {
+        <span></span>
+      }
+
+      @if (currentStep() < 3) {
+        <button class="purchase-btn purchase-btn--primary" (click)="nextStep()">Siguiente</button>
+      } @else {
+        <button class="purchase-btn purchase-btn--primary"
+                [disabled]="!selectedPayment()">
+          Confirmar y pagar
+        </button>
+      }
+    </div>
+
+  </div>
+</div>
