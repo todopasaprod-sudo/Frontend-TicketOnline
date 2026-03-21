@@ -1,9 +1,9 @@
 import { Component, signal, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { EventCard, EventData } from '../../../layout/components/event-card/event-card';
+import { EventCard } from '../../../layout/components/event-card/event-card';
 import { GRADIENTS } from '../../data/dashboard-events';
-import { EventService, CreateEventDto } from '../../../core/events/event.service';
+import { EventService, CreateEventDto, EventDto } from '../../../core/events/event.service';
 
 @Component({
   selector: 'app-event-form',
@@ -89,18 +89,23 @@ export class EventForm {
     }
   }
 
-  get previewEvent(): EventData {
+  get previewEvent(): EventDto {
     const v = this.form.value;
     return {
-      id:       0,
-      title:    v.title    || 'Título del evento',
-      category: v.category || 'Categoría',
-      date:     this.formatDateForDisplay(v.date || ''),
-      time:     v.time ? v.time + ' hs' : '--:-- hs',
-      venue:    v.venue || 'Venue del evento',
-      city:     v.city  || 'Ciudad',
-      price:    v.ticketType === 'free' ? null : (Number(v.price) || 0),
-      gradient: this.selectedGradient(),
+      id:              '',
+      name:            v.title    || 'Título del evento',
+      category:        v.category || 'Categoría',
+      date:            v.date     || '2026-01-01',
+      time:            v.time ? v.time + ':00' : '00:00:00',
+      venue:           v.venue || 'Venue del evento',
+      address:         v.address || '',
+      city:            v.city  || 'Ciudad',
+      organizerName:   v.organizerName || '',
+      imageUrl:        this.selectedGradient(),
+      price:           v.ticketType === 'free' ? undefined : (Number(v.price) || undefined),
+      createdByUserId: '',
+      status:          'Draft',
+      createdAt:       new Date().toISOString(),
     };
   }
 

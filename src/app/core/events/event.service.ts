@@ -54,6 +54,10 @@ export class EventService {
     return this.http.get<EventDto[]>(`${this.apiUrl}/events`);
   }
 
+  getMyEvents(): Observable<EventDto[]> {
+    return this.http.get<EventDto[]>(`${this.apiUrl}/events/my`);
+  }
+
   getById(id: string): Observable<EventDto> {
     return this.http.get<EventDto>(`${this.apiUrl}/events/${id}`);
   }

@@ -3,14 +3,17 @@
     <app-navbar></app-navbar>
 
     <!-- Hero: evento destacado -->
-    <section class="hero" [style.background]="featuredEvent().gradient">
+    @if (featuredEvent()) {
+    <section class="hero" [style.background]="heroGradient()">
         <div class="hero__overlay"></div>
         <div class="hero__content">
             <div class="hero__eyebrow">
                 <span class="hero__tag">Evento destacado</span>
-                <span class="hero__category-tag">{{ featuredEvent().category }}</span>
+                @if (featuredEvent()!.category) {
+                <span class="hero__category-tag">{{ featuredEvent()!.category }}</span>
+                }
             </div>
-            <h1 class="hero__title">{{ featuredEvent().title }}</h1>
+            <h1 class="hero__title">{{ featuredEvent()!.name }}</h1>
             <div class="hero__meta">
                 <span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -19,14 +22,14 @@
                         <line x1="8" y1="2" x2="8" y2="6" />
                         <line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
-                    {{ featuredEvent().date }} · {{ featuredEvent().time }}
+                    {{ heroDate() }} · {{ heroTime() }}
                 </span>
                 <span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                         <circle cx="12" cy="10" r="3" />
                     </svg>
-                    {{ featuredEvent().venue }}, {{ featuredEvent().city }}
+                    {{ featuredEvent()!.venue }}, {{ featuredEvent()!.city }}
                 </span>
             </div>
             <div class="hero__actions">
@@ -42,6 +45,7 @@
         <div class="hero__deco-1"></div>
         <div class="hero__deco-2"></div>
     </section>
+    }
 
     <!-- Contenido principal -->
     <main class="events-page__main">
@@ -92,22 +96,39 @@
                 </select>
             </div>
 
+            <!-- Estado de carga -->
+            @if (loading()) {
+            <div class="events-loading">
+                <div class="events-loading__spinner"></div>
+                <p>Cargando eventos...</p>
+            </div>
+            }
+
+            <!-- Error -->
+            @if (error()) {
+            <div class="events-error">
+                <p>{{ error() }}</p>
+            </div>
+            }
+
             <!-- Grilla de eventos -->
-            @if (filteredEvents().length > 0) {
-            <div class="events-grid">
-                @for (event of filteredEvents(); track event.id) {
-                <app-event-card [event]="event"></app-event-card>
+            @if (!loading() && !error()) {
+                @if (filteredEvents().length > 0) {
+                <div class="events-grid">
+                    @for (event of filteredEvents(); track event.id) {
+                    <app-event-card [event]="event"></app-event-card>
+                    }
+                </div>
+                } @else {
+                <div class="events-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <p>No encontramos eventos para tu búsqueda.</p>
+                    <button (click)="setCategory('Todos')">Ver todos los eventos</button>
+                </div>
                 }
-            </div>
-            } @else {
-            <div class="events-empty">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                </svg>
-                <p>No encontramos eventos para tu búsqueda.</p>
-                <button (click)="setCategory('Todos')">Ver todos los eventos</button>
-            </div>
             }
 
         </div>

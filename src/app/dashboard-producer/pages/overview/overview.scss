@@ -291,6 +291,18 @@
 
   &--publicado  { background: rgba(16,185,129,0.15);  color: $green; }
   &--borrador   { background: rgba(107,114,128,0.2);   color: #9ca3af; }
+  &--cancelado  { background: rgba(239,68,68,0.15);    color: #f87171; }
   &--agotado    { background: rgba(239,68,68,0.15);    color: #f87171; }
   &--finalizado { background: rgba(139,92,246,0.15);   color: #a78bfa; }
 }
+
+.overview__loading,
+.overview__error,
+.overview__empty {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.overview__error { color: #f87171; }
