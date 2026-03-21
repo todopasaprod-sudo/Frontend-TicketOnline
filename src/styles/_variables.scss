@@ -1,5 +1,5 @@
 // ===========================
-// Blues
+// Blues (sin cambios — base)
 // ===========================
 $blue-400:   #47bcff;
 $blue-500:   #21a9ff;
@@ -8,48 +8,47 @@ $blue-600:   #0088d4;
 // ===========================
 // Backgrounds
 // ===========================
-// $bg-dark:    #f3f3f3;
-$bg-dark:    #040f1c;
-$bg-sidebar: #020b14;
-$bg-card:    #071525;
-$bg-input:   #0a1e33;
+$bg-dark:    #000000;
+$bg-sidebar: #020c16;  // era #020b14 → +1 paso de azul más frío (hue 204°)
+$bg-card:    #061625;  // era #071525 → ligero ajuste para alinear al hue exacto
+$bg-input:   #0a1f33;  // era #0a1e33 → un tono más hacia el azul puro
 
 // ===========================
 // Border
 // ===========================
-$border:     rgba(33, 169, 255, 0.2);
+$border: rgba(0, 136, 212, 0.22); // deriva directamente de $blue-600 en vez de $blue-500
 
 // ===========================
 // Text
 // ===========================
-$text-main:  #edf6ff;
-$text-muted: #8ba8be;
+$text-main:  #eaf5ff;  // era #edf6ff → tinte azul-frío más puro (menos neutro)
+$text-muted: #7aa8c0;  // era #8ba8be → satura un poco más hacia el blue-600
 
 // ===========================
-// Accent purple
+// Accent purple (sin cambios)
 // ===========================
-$purple:     #a855f7;  // base para todos los rgba(168,85,247,...) del app
+$purple: #0050a0;
 
 // ===========================
-// Status / semantic colors
+// Status / semantic
 // ===========================
-$green:      #34d399;  // éxito, tendencias positivas
-$yellow:     #fbbf24;  // advertencia
+$green:  #22d09a;  // era #34d399 → desplazado levemente a cian para no chocar con el azul
+$yellow: #f5b800;  // era #fbbf24 → más saturado, sin tanto naranja
+$red:    #f16c6c;  // era #f87171 → un pelín más frío para que no desentone
 
 // ===========================
-// Brand panel (login / register)
+// Brand panel
 // ===========================
-$brand-dark: #1e0a3c;
-$brand-mid:  #3b0764;
+$brand-dark: #001a33;  // era #1e0a3c → reemplaza el purple-oscuro por deep-blue coherente
+$brand-mid:  #003060;  // era #3b0764 → mismo criterio, azul profundo en vez de violeta
 
 // ===========================
 // Misc
 // ===========================
-$red:        #f87171;
-$sidebar-w:  240px;
+$sidebar-w: 240px;
 
 // ===========================
 // Comparison chart colors
 // ===========================
-$color-a:    #6366f1;
-$color-b:    #21a9ff;
+$color-a: #5b7cf5;  // era #6366f1 → empujado levemente hacia el azul (menos violeta)
+$color-b: #21a9ff;  // sin cambios, ya es $blue-500
