@@ -273,6 +273,108 @@
   }
 }
 
+// ===========================
+// Custom select dropdown
+// ===========================
+.custom-select {
+  position: relative;
+
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+  }
+
+  &__trigger {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    background: $bg-input;
+    border: 1px solid $border;
+    border-radius: 10px;
+    color: $text-main;
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    text-align: left;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $blue-500;
+      box-shadow: 0 0 0 3px rgba($purple, 0.15);
+    }
+  }
+
+  &__placeholder { color: rgba(156, 163, 175, 0.5); }
+
+  &__chevron {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: $text-muted;
+    transition: transform 0.2s;
+  }
+
+  &--open {
+    .custom-select__trigger {
+      border-color: $blue-500;
+      box-shadow: 0 0 0 3px rgba($purple, 0.15);
+    }
+    .custom-select__chevron { transform: rotate(180deg); }
+  }
+
+  &--error {
+    .custom-select__trigger { border-color: $red; }
+    &.custom-select--open .custom-select__trigger,
+    .custom-select__trigger:focus {
+      box-shadow: 0 0 0 3px rgba($red, 0.15);
+    }
+  }
+
+  &__options {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: $bg-input;
+    border: 1px solid rgba($blue-500, 0.4);
+    border-radius: 10px;
+    padding: 4px;
+    list-style: none;
+    margin: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    animation: dropdown-in 0.12s ease;
+  }
+
+  &__option {
+    padding: 0.55rem 0.8rem;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    color: $text-main;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: rgba($blue-500, 0.12); }
+
+    &--selected {
+      background: rgba($blue-500, 0.18);
+      color: $blue-400;
+      font-weight: 500;
+    }
+  }
+}
+
+@keyframes dropdown-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .optional {
   color: $text-muted;
   font-weight: 400;

@@ -98,14 +98,37 @@
 
         <div class="form-row">
           <div class="field" [class.field--error]="isInvalid('identificationType')">
-            <label for="identificationType">Tipo de documento</label>
-            <select id="identificationType" formControlName="identificationType">
-              <option value="" disabled>Seleccioná</option>
-              <option value="DNI">DNI</option>
-              <option value="PASSPORT">Pasaporte</option>
-              <option value="CUIL">CUIL</option>
-              <option value="CUIT">CUIT</option>
-            </select>
+            <label>Tipo de documento</label>
+            <div class="custom-select"
+                 [class.custom-select--open]="docTypeOpen()"
+                 [class.custom-select--error]="isInvalid('identificationType')">
+              @if (docTypeOpen()) {
+                <div class="custom-select__backdrop" (click)="docTypeOpen.set(false)"></div>
+              }
+              <button type="button" class="custom-select__trigger"
+                      (click)="docTypeOpen.update(v => !v)"
+                      [attr.aria-expanded]="docTypeOpen()">
+                <span [class.custom-select__placeholder]="!selectedDocTypeLabel">
+                  {{ selectedDocTypeLabel || 'Seleccioná' }}
+                </span>
+                <svg class="custom-select__chevron" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 8l4 4 4-4"/>
+                </svg>
+              </button>
+              @if (docTypeOpen()) {
+                <ul class="custom-select__options" role="listbox">
+                  @for (opt of docTypeOptions; track opt.value) {
+                    <li class="custom-select__option"
+                        [class.custom-select__option--selected]="form.get('identificationType')?.value === opt.value"
+                        (click)="selectDocType(opt.value)"
+                        role="option">
+                      {{ opt.label }}
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
             @if (isInvalid('identificationType')) {
               <span class="field__error">Seleccioná un tipo de documento</span>
             }
@@ -138,14 +161,37 @@
 
         <div class="form-row">
           <div class="field" [class.field--error]="isInvalid('gender')">
-            <label for="gender">Género</label>
-            <select id="gender" formControlName="gender">
-              <option value="" disabled>Seleccioná</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Femenino">Femenino</option>
-              <option value="No binario">No binario</option>
-              <option value="Prefiero no decir">Prefiero no decir</option>
-            </select>
+            <label>Género</label>
+            <div class="custom-select"
+                 [class.custom-select--open]="genderOpen()"
+                 [class.custom-select--error]="isInvalid('gender')">
+              @if (genderOpen()) {
+                <div class="custom-select__backdrop" (click)="genderOpen.set(false)"></div>
+              }
+              <button type="button" class="custom-select__trigger"
+                      (click)="genderOpen.update(v => !v)"
+                      [attr.aria-expanded]="genderOpen()">
+                <span [class.custom-select__placeholder]="!selectedGenderLabel">
+                  {{ selectedGenderLabel || 'Seleccioná' }}
+                </span>
+                <svg class="custom-select__chevron" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 8l4 4 4-4"/>
+                </svg>
+              </button>
+              @if (genderOpen()) {
+                <ul class="custom-select__options" role="listbox">
+                  @for (opt of genderOptions; track opt.value) {
+                    <li class="custom-select__option"
+                        [class.custom-select__option--selected]="form.get('gender')?.value === opt.value"
+                        (click)="selectGender(opt.value)"
+                        role="option">
+                      {{ opt.label }}
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
             @if (isInvalid('gender')) {
               <span class="field__error">Seleccioná una opción</span>
             }

@@ -28,6 +28,45 @@ export class Register {
   showConfirmPassword = signal(false);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
+  docTypeOpen = signal(false);
+
+  readonly docTypeOptions = [
+    { value: 'DNI', label: 'DNI' },
+    { value: 'PASSPORT', label: 'Pasaporte' },
+    { value: 'CUIL', label: 'CUIL' },
+    { value: 'CUIT', label: 'CUIT' },
+  ];
+
+  get selectedDocTypeLabel(): string {
+    const val = this.form.get('identificationType')?.value as string;
+    return this.docTypeOptions.find((o) => o.value === val)?.label ?? '';
+  }
+
+  selectDocType(value: string) {
+    this.form.get('identificationType')?.setValue(value);
+    this.form.get('identificationType')?.markAsDirty();
+    this.docTypeOpen.set(false);
+  }
+
+  genderOpen = signal(false);
+
+  readonly genderOptions = [
+    { value: 'Masculino', label: 'Masculino' },
+    { value: 'Femenino', label: 'Femenino' },
+    { value: 'No binario', label: 'No binario' },
+    { value: 'Prefiero no decir', label: 'Prefiero no decir' },
+  ];
+
+  get selectedGenderLabel(): string {
+    const val = this.form.get('gender')?.value as string;
+    return this.genderOptions.find((o) => o.value === val)?.label ?? '';
+  }
+
+  selectGender(value: string) {
+    this.form.get('gender')?.setValue(value);
+    this.form.get('gender')?.markAsDirty();
+    this.genderOpen.set(false);
+  }
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
