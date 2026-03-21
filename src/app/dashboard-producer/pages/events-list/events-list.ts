@@ -1,8 +1,21 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DASHBOARD_EVENTS, DashboardEvent, EventStatus } from '../../data/dashboard-events';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EventService, EventDto } from '../../../core/events/event.service';
 
-type FilterStatus = 'todos' | EventStatus;
+const CATEGORY_GRADIENTS: Record<string, string> = {
+  'Música': 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)',
+  'Teatro': 'linear-gradient(135deg, #7c2d12 0%, #dc2626 100%)',
+  'Deportes': 'linear-gradient(135deg, #065f46 0%, #059669 100%)',
+  'Stand Up': 'linear-gradient(135deg, #b45309 0%, #d97706 100%)',
+  'Arte': 'linear-gradient(135deg, #1e40af 0%, #7c3aed 100%)',
+  'Gastronomía': 'linear-gradient(135deg, #831843 0%, #db2777 100%)',
+  'Infantil': 'linear-gradient(135deg, #5b21b6 0%, #a855f7 100%)',
+};
+const DEFAULT_GRADIENT = 'linear-gradient(135deg, #0f4c75 0%, #1b6ca8 100%)';
+const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+type FilterStatus = 'todos' | 'Published' | 'Draft' | 'Cancelled';
 
 @Component({
   selector: 'app-events-list',
@@ -11,17 +24,21 @@ type FilterStatus = 'todos' | EventStatus;
   styleUrl: './events-list.scss',
 })
 export class EventsList {
-  allEvents = signal<DashboardEvent[]>(DASHBOARD_EVENTS);
+  private eventService = inject(EventService);
+
+  loading = signal(true);
+  error = signal<string | null>(null);
+  allEvents = signal<EventDto[]>([]);
   searchQuery = signal('');
   activeFilter = signal<FilterStatus>('todos');
-  deleteConfirmId = signal<number | null>(null);
+  cancelConfirmId = signal<string | null>(null);
+  cancelling = signal(false);
 
   filters: { label: string; value: FilterStatus }[] = [
-    { label: 'Todos', value: 'todos' },
-    { label: 'Publicados', value: 'publicado' },
-    { label: 'Borradores', value: 'borrador' },
-    { label: 'Agotados', value: 'agotado' },
-    { label: 'Finalizados', value: 'finalizado' },
+    { label: 'Todos',      value: 'todos'     },
+    { label: 'Publicados', value: 'Published' },
+    { label: 'Borradores', value: 'Draft'     },
+    { label: 'Cancelados', value: 'Cancelled' },
   ];
 
   filteredEvents = computed(() => {
@@ -31,42 +48,90 @@ export class EventsList {
     }
     const q = this.searchQuery().trim().toLowerCase();
     if (q) {
-      events = events.filter(e =>
-        e.title.toLowerCase().includes(q) ||
-        e.category.toLowerCase().includes(q) ||
-        e.city.toLowerCase().includes(q)
+      events = events.filter(
+        e =>
+          e.name.toLowerCase().includes(q) ||
+          (e.category ?? '').toLowerCase().includes(q) ||
+          e.city.toLowerCase().includes(q),
       );
     }
     return events;
   });
 
+  constructor() {
+    this.eventService
+      .getMyEvents()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: evts => {
+          this.allEvents.set(evts);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudieron cargar los eventos.');
+          this.loading.set(false);
+        },
+      });
+  }
+
   setFilter(f: FilterStatus) { this.activeFilter.set(f); }
   onSearch(e: Event) { this.searchQuery.set((e.target as HTMLInputElement).value); }
 
-  confirmDelete(id: number) { this.deleteConfirmId.set(id); }
-  cancelDelete() { this.deleteConfirmId.set(null); }
-  deleteEvent(id: number) {
-    this.allEvents.update(events => events.filter(e => e.id !== id));
-    this.deleteConfirmId.set(null);
+  confirmCancel(id: string) { this.cancelConfirmId.set(id); }
+  abortCancel() { this.cancelConfirmId.set(null); }
+
+  cancelEvent(id: string) {
+    this.cancelling.set(true);
+    this.eventService.cancel(id).subscribe({
+      next: () => {
+        this.allEvents.update(evts =>
+          evts.map(e => (e.id === id ? { ...e, status: 'Cancelled' } : e)),
+        );
+        this.cancelConfirmId.set(null);
+        this.cancelling.set(false);
+      },
+      error: () => {
+        this.cancelConfirmId.set(null);
+        this.cancelling.set(false);
+      },
+    });
   }
 
-  getStatusLabel(status: EventStatus): string {
-    const map: Record<EventStatus, string> = {
-      publicado: 'Publicado',
-      borrador: 'Borrador',
-      agotado: 'Agotado',
-      finalizado: 'Finalizado',
+  getGradient(event: EventDto): string {
+    if (event.imageUrl?.startsWith('linear-gradient')) return event.imageUrl;
+    return CATEGORY_GRADIENTS[event.category ?? ''] ?? DEFAULT_GRADIENT;
+  }
+
+  formatDate(isoDate: string): string {
+    const [, m, d] = isoDate.split('-');
+    return `${parseInt(d)} ${MONTHS[parseInt(m) - 1]}`;
+  }
+
+  formatTime(isoTime: string): string {
+    const [h, min] = isoTime.split(':');
+    return `${h}:${min} hs`;
+  }
+
+  getStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      Published: 'Publicado',
+      Draft:     'Borrador',
+      Cancelled: 'Cancelado',
     };
-    return map[status];
+    return map[status] ?? status;
   }
 
-  ticketPercent(event: DashboardEvent): number {
-    if (event.ticketsTotal === 0) return 0;
-    return Math.round((event.ticketsSold / event.ticketsTotal) * 100);
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      Published: 'publicado',
+      Draft:     'borrador',
+      Cancelled: 'cancelado',
+    };
+    return map[status] ?? 'borrador';
   }
 
-  formatPrice(price: number | null): string {
-    if (price === null) return 'Gratis';
+  formatPrice(price: number | null | undefined): string {
+    if (price == null) return 'Gratis';
     return '$' + price.toLocaleString('es-AR');
   }
 }

@@ -233,7 +233,156 @@
 }
 
 // ================================
-// Ticket type selector
+// Ticket types list (FormArray)
+// ================================
+.ticket-types-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ticket-type-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+
+  &--readonly {
+    border-color: rgba(255,255,255,0.05);
+    opacity: 0.85;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  &__index {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $blue-400;
+  }
+
+  &__remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+
+    svg { width: 16px; height: 16px; }
+
+    &:hover { color: #f87171; background: rgba(239,68,68,0.08); }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__section {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #9ca3af;
+    letter-spacing: 0.05em;
+  }
+
+  &__name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $text-main;
+  }
+
+  &__badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    background: rgba(251,191,36,0.15);
+    color: #fbbf24;
+  }
+
+  &__price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $blue-400;
+  }
+
+  &__desc {
+    font-size: 0.8rem;
+    color: $text-muted;
+    margin-bottom: 0.75rem;
+  }
+
+  &__meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  &__inactive { color: #f87171; }
+}
+
+.add-ticket-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: $text-muted;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  width: 100%;
+  justify-content: center;
+
+  svg { width: 18px; height: 18px; }
+
+  &:hover {
+    border-color: rgba($blue-500, 0.5);
+    color: $blue-400;
+    background: rgba($blue-500, 0.05);
+  }
+}
+
+.form-section__required-note {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.field--grow { flex: 1; }
+.field--badge { width: 200px; flex-shrink: 0; }
+
+// Ticket type selector (legacy radio - kept for reference)
 // ================================
 .ticket-type {
   display: grid;

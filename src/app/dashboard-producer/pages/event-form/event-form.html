@@ -145,6 +145,12 @@
             }
           </div>
         </div>
+
+        <div class="field">
+          <label for="capacity">Capacidad total del evento</label>
+          <input id="capacity" type="number" formControlName="capacity"
+                 placeholder="Ej: 5000 (opcional)" min="1"/>
+        </div>
       </section>
 
       <!-- Section 3: Imagen -->
@@ -174,62 +180,127 @@
         </div>
       </section>
 
-      <!-- Section 4: Entradas -->
+      <!-- Section 4: Tipos de entrada -->
       <section class="form-section">
         <div class="form-section__title">
           <span class="form-section__num">4</span>
-          Configuración de entradas
+          Tipos de entrada
+          @if (!isEditing) {
+            <span class="form-section__required-note">Mínimo 1 requerido</span>
+          }
         </div>
 
-        <div class="ticket-type">
-          <label class="ticket-type__option" [class.ticket-type__option--active]="form.get('ticketType')?.value === 'paid'">
-            <input type="radio" formControlName="ticketType" value="paid"/>
-            <div class="ticket-type__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="1" x2="12" y2="23"/>
-                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-              </svg>
-            </div>
-            <div>
-              <span class="ticket-type__label">De pago</span>
-              <span class="ticket-type__desc">Cobrá un precio por entrada</span>
-            </div>
-          </label>
-          <label class="ticket-type__option" [class.ticket-type__option--active]="form.get('ticketType')?.value === 'free'">
-            <input type="radio" formControlName="ticketType" value="free"/>
-            <div class="ticket-type__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </div>
-            <div>
-              <span class="ticket-type__label">Gratuito</span>
-              <span class="ticket-type__desc">Acceso libre sin costo</span>
-            </div>
-          </label>
-        </div>
-
-        <div class="fields-row">
-          @if (form.get('ticketType')?.value === 'paid') {
-            <div class="field" [class.field--error]="isInvalid('price')">
-              <label for="price">Precio por entrada ($) <span class="required">*</span></label>
-              <input id="price" type="number" formControlName="price"
-                     placeholder="Ej: 15000" min="1"/>
-              @if (isInvalid('price')) {
-                <span class="field__error">Ingresá un precio mayor a 0.</span>
+        @if (isEditing) {
+          <!-- Modo edición: se muestran las entradas existentes (read-only) -->
+          @if (existingTicketTypes().length > 0) {
+            <p class="form-section__hint">
+              Para modificar los tipos de entrada de un evento existente, usá el gestor de entradas.
+            </p>
+            <div class="ticket-types-list">
+              @for (tt of existingTicketTypes(); track tt.id) {
+                <div class="ticket-type-card ticket-type-card--readonly">
+                  <div class="ticket-type-card__header">
+                    <div class="ticket-type-card__name-row">
+                      @if (tt.sectionLabel) {
+                        <span class="ticket-type-card__section">{{ tt.sectionLabel }}</span>
+                      }
+                      <span class="ticket-type-card__name">{{ tt.name }}</span>
+                      @if (tt.badge) {
+                        <span class="ticket-type-card__badge">{{ tt.badge }}</span>
+                      }
+                    </div>
+                    <span class="ticket-type-card__price">{{ formatPrice(tt.price) }}</span>
+                  </div>
+                  @if (tt.description) {
+                    <p class="ticket-type-card__desc">{{ tt.description }}</p>
+                  }
+                  <div class="ticket-type-card__meta">
+                    <span>Stock: {{ tt.stock ?? 'Ilimitado' }}</span>
+                    <span>Vendidos: {{ tt.soldCount }}</span>
+                    <span>Máx. por orden: {{ tt.maxPerOrder }}</span>
+                    <span [class.ticket-type-card__inactive]="!tt.isActive">
+                      {{ tt.isActive ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </div>
+                </div>
               }
             </div>
+          } @else {
+            <p class="form-section__hint">Este evento no tiene tipos de entrada cargados aún.</p>
           }
-          <div class="field" [class.field--error]="isInvalid('capacity')">
-            <label for="capacity">Capacidad total <span class="required">*</span></label>
-            <input id="capacity" type="number" formControlName="capacity"
-                   placeholder="Ej: 1000" min="1"/>
-            @if (isInvalid('capacity')) {
-              <span class="field__error">Ingresá la capacidad del evento.</span>
+        } @else {
+          <!-- Modo creación: FormArray editable -->
+          <div class="ticket-types-list" formArrayName="ticketTypes">
+            @for (tt of ticketTypesArray.controls; track $index) {
+              <div class="ticket-type-card" [formGroupName]="$index">
+                <div class="ticket-type-card__top">
+                  <span class="ticket-type-card__index">Entrada {{ $index + 1 }}</span>
+                  @if (ticketTypesArray.length > 1) {
+                    <button type="button" class="ticket-type-card__remove" (click)="removeTicketType($index)"
+                            title="Eliminar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6 6 18M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+
+                <div class="fields-row">
+                  <div class="field field--grow" [class.field--error]="isInvalidTicket($index, 'name')">
+                    <label>Nombre <span class="required">*</span></label>
+                    <input type="text" formControlName="name" placeholder="Ej: General, VIP, PACK x2"/>
+                    @if (isInvalidTicket($index, 'name')) {
+                      <span class="field__error">Ingresá el nombre del tipo de entrada.</span>
+                    }
+                  </div>
+                  <div class="field field--badge">
+                    <label>Badge</label>
+                    <input type="text" formControlName="badge" placeholder="Ej: ÚLTIMA TANDA"/>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Descripción</label>
+                  <input type="text" formControlName="description"
+                         placeholder="Ej: Acceso general al evento. No incluye zona VIP."/>
+                </div>
+
+                <div class="fields-row">
+                  <div class="field" [class.field--error]="isInvalidTicket($index, 'price')">
+                    <label>Precio ($) <span class="required">*</span></label>
+                    <input type="number" formControlName="price" placeholder="0 = gratis" min="0"/>
+                    @if (isInvalidTicket($index, 'price')) {
+                      <span class="field__error">Ingresá un precio válido (0 para gratis).</span>
+                    }
+                  </div>
+                  <div class="field">
+                    <label>Stock</label>
+                    <input type="number" formControlName="stock" placeholder="Vacío = ilimitado" min="1"/>
+                  </div>
+                  <div class="field" [class.field--error]="isInvalidTicket($index, 'maxPerOrder')">
+                    <label>Máx. por compra</label>
+                    <input type="number" formControlName="maxPerOrder" min="1" max="20"/>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Sección (agrupador visual)</label>
+                  <input type="text" formControlName="sectionLabel"
+                         placeholder="Ej: DIA 1, Acceso Múltiple (opcional)"/>
+                </div>
+              </div>
             }
           </div>
-        </div>
+
+          <button type="button" class="add-ticket-btn" (click)="addTicketType()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Agregar tipo de entrada
+          </button>
+        }
       </section>
 
       <!-- Section 5: Publicación -->
