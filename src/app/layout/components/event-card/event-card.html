@@ -1,4 +1,4 @@
-<article class="event-card">
+<article class="event-card" [routerLink]="event().slug ? ['/eventos', event().slug] : null">
 
   <!-- Gradient image area -->
   <div class="event-card__image" [style.background]="gradient()">

@@ -74,6 +74,10 @@ export interface UpdateEventDto {
   capacity?: number;
 }
 
+export interface EventDetailDto extends EventDto {
+  ticketTypes: TicketTypeDto[];
+}
+
 export interface EventDto {
   id: string;
   name: string;
@@ -115,6 +119,10 @@ export class EventService {
 
   getById(id: string): Observable<EventDto> {
     return this.http.get<EventDto>(`${this.apiUrl}/events/${id}`);
+  }
+
+  getBySlug(slug: string): Observable<EventDetailDto> {
+    return this.http.get<EventDetailDto>(`${this.apiUrl}/events/slug/${slug}`);
   }
 
   update(id: string, dto: UpdateEventDto): Observable<EventDto> {

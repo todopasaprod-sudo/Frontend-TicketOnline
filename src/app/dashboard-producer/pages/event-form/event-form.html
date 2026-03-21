@@ -245,48 +245,49 @@
                   }
                 </div>
 
-                <div class="fields-row">
-                  <div class="field field--grow" [class.field--error]="isInvalidTicket($index, 'name')">
-                    <label>Nombre <span class="required">*</span></label>
-                    <input type="text" formControlName="name" placeholder="Ej: General, VIP, PACK x2"/>
-                    @if (isInvalidTicket($index, 'name')) {
-                      <span class="field__error">Ingresá el nombre del tipo de entrada.</span>
-                    }
+                <div class="ticket-type-card__body">
+                  <div class="fields-row">
+                    <div class="field field--grow" [class.field--error]="isInvalidTicket($index, 'name')">
+                      <label>Nombre <span class="required">*</span></label>
+                      <input type="text" formControlName="name" placeholder="Ej: General, VIP, PACK x2"/>
+                      @if (isInvalidTicket($index, 'name')) {
+                        <span class="field__error">Ingresá el nombre del tipo de entrada.</span>
+                      }
+                    </div>
+                    <div class="field">
+                      <label>Badge <span class="field__hint">ej: ÚLTIMA TANDA</span></label>
+                      <input type="text" formControlName="badge" placeholder="Opcional"/>
+                    </div>
                   </div>
-                  <div class="field field--badge">
-                    <label>Badge</label>
-                    <input type="text" formControlName="badge" placeholder="Ej: ÚLTIMA TANDA"/>
-                  </div>
-                </div>
 
-                <div class="field">
-                  <label>Descripción</label>
-                  <input type="text" formControlName="description"
-                         placeholder="Ej: Acceso general al evento. No incluye zona VIP."/>
-                </div>
-
-                <div class="fields-row">
-                  <div class="field" [class.field--error]="isInvalidTicket($index, 'price')">
-                    <label>Precio ($) <span class="required">*</span></label>
-                    <input type="number" formControlName="price" placeholder="0 = gratis" min="0"/>
-                    @if (isInvalidTicket($index, 'price')) {
-                      <span class="field__error">Ingresá un precio válido (0 para gratis).</span>
-                    }
-                  </div>
                   <div class="field">
-                    <label>Stock</label>
-                    <input type="number" formControlName="stock" placeholder="Vacío = ilimitado" min="1"/>
+                    <label>Descripción</label>
+                    <input type="text" formControlName="description"
+                           placeholder="Ej: Acceso general. No incluye zona VIP."/>
                   </div>
-                  <div class="field" [class.field--error]="isInvalidTicket($index, 'maxPerOrder')">
-                    <label>Máx. por compra</label>
-                    <input type="number" formControlName="maxPerOrder" min="1" max="20"/>
-                  </div>
-                </div>
 
-                <div class="field">
-                  <label>Sección (agrupador visual)</label>
-                  <input type="text" formControlName="sectionLabel"
-                         placeholder="Ej: DIA 1, Acceso Múltiple (opcional)"/>
+                  <div class="fields-row fields-row--3">
+                    <div class="field" [class.field--error]="isInvalidTicket($index, 'price')">
+                      <label>Precio ($) <span class="required">*</span></label>
+                      <input type="number" formControlName="price" placeholder="0 = gratis" min="0"/>
+                      @if (isInvalidTicket($index, 'price')) {
+                        <span class="field__error">Precio inválido.</span>
+                      }
+                    </div>
+                    <div class="field">
+                      <label>Stock <span class="field__hint">vacío = ilimitado</span></label>
+                      <input type="number" formControlName="stock" placeholder="—" min="1"/>
+                    </div>
+                    <div class="field">
+                      <label>Máx. por compra</label>
+                      <input type="number" formControlName="maxPerOrder" min="1" max="20"/>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>Sección <span class="field__hint">agrupador visual, ej: DIA 1</span></label>
+                    <input type="text" formControlName="sectionLabel" placeholder="Opcional"/>
+                  </div>
                 </div>
               </div>
             }

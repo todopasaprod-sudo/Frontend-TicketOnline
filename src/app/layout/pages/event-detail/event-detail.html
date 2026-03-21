@@ -1,0 +1,196 @@
+<div class="event-detail">
+
+  <app-navbar />
+
+  @if (loading()) {
+    <div class="event-detail__state">
+      <div class="event-detail__spinner"></div>
+      <p>Cargando evento...</p>
+    </div>
+  } @else if (error()) {
+    <div class="event-detail__state event-detail__state--error">
+      <p>{{ error() }}</p>
+      <a routerLink="/eventos" class="event-detail__back-btn">Volver a eventos</a>
+    </div>
+  } @else if (event()) {
+
+    <!-- Hero -->
+    <section class="event-hero" [style.background]="gradient()">
+      <div class="event-hero__overlay"></div>
+      <div class="event-hero__content">
+        <a routerLink="/eventos" class="event-hero__back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+          Volver
+        </a>
+        @if (event()!.category) {
+          <span class="event-hero__category">{{ event()!.category }}</span>
+        }
+        <h1 class="event-hero__title">{{ event()!.name }}</h1>
+        <div class="event-hero__meta">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            {{ formattedDate() }}
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            {{ formattedTime() }}
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ event()!.venue }}, {{ event()!.city }}
+          </span>
+        </div>
+      </div>
+      <div class="event-hero__deco-1"></div>
+      <div class="event-hero__deco-2"></div>
+    </section>
+
+    <!-- Body -->
+    <div class="event-detail__body">
+      <div class="event-detail__container">
+
+        <!-- Left col: info -->
+        <div class="event-detail__left">
+
+          <!-- Descripción -->
+          @if (event()!.description) {
+            <section class="detail-card">
+              <h2 class="detail-card__title">Sobre el evento</h2>
+              <p class="detail-card__text">{{ event()!.description }}</p>
+            </section>
+          }
+
+          <!-- Info grid -->
+          <section class="detail-card">
+            <h2 class="detail-card__title">Información</h2>
+            <div class="info-grid">
+              <div class="info-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <div>
+                  <span class="info-item__label">Fecha</span>
+                  <span class="info-item__value">{{ formattedDate() }}</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <div>
+                  <span class="info-item__label">Hora</span>
+                  <span class="info-item__value">{{ formattedTime() }}</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <div>
+                  <span class="info-item__label">Lugar</span>
+                  <span class="info-item__value">{{ event()!.venue }}</span>
+                  <span class="info-item__sub">{{ event()!.address }}, {{ event()!.city }}</span>
+                </div>
+              </div>
+              <div class="info-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <div>
+                  <span class="info-item__label">Organizador</span>
+                  <span class="info-item__value">{{ event()!.organizerName }}</span>
+                </div>
+              </div>
+              @if (event()!.minAge) {
+                <div class="info-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <div>
+                    <span class="info-item__label">Edad mínima</span>
+                    <span class="info-item__value">+{{ event()!.minAge }} años</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        </div>
+
+        <!-- Right col: tickets -->
+        <div class="event-detail__right">
+          <div class="tickets-panel">
+            <h2 class="tickets-panel__title">Entradas</h2>
+
+            @if (event()!.ticketTypes.length === 0) {
+              <p class="tickets-panel__empty">No hay entradas disponibles aún.</p>
+            } @else {
+              <div class="ticket-list">
+                @for (tt of event()!.ticketTypes; track tt.id) {
+                  @if (tt.sectionLabel) {
+                    <p class="ticket-list__section">{{ tt.sectionLabel }}</p>
+                  }
+                  <div class="ticket-item" [class.ticket-item--sold-out]="isSoldOut(tt) || !tt.isActive">
+                    <div class="ticket-item__info">
+                      <div class="ticket-item__name-row">
+                        <span class="ticket-item__name">{{ tt.name }}</span>
+                        @if (tt.badge) {
+                          <span class="ticket-item__badge">{{ tt.badge }}</span>
+                        }
+                      </div>
+                      @if (tt.description) {
+                        <p class="ticket-item__desc">{{ tt.description }}</p>
+                      }
+                      <span class="ticket-item__stock">
+                        @if (isSoldOut(tt)) { Agotado }
+                        @else if (!tt.isActive) { No disponible }
+                        @else if (tt.stock != null) { {{ tt.stock - tt.soldCount }} disponibles }
+                        @else { Disponible }
+                      </span>
+                    </div>
+                    <div class="ticket-item__action">
+                      <span class="ticket-item__price">{{ formatPrice(tt.price) }}</span>
+                      <button class="ticket-item__btn"
+                              [disabled]="isSoldOut(tt) || !tt.isActive || !tt.isAvailable">
+                        @if (isSoldOut(tt)) { Agotado }
+                        @else if (!tt.isActive || !tt.isAvailable) { No disponible }
+                        @else { Comprar }
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <p class="tickets-panel__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                El pago se procesa de forma segura.
+              </p>
+            }
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  }
+</div>

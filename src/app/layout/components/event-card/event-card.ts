@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { EventDto } from '../../../core/events/event.service';
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -16,7 +17,7 @@ const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', '
 
 @Component({
   selector: 'app-event-card',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './event-card.html',
   styleUrl: './event-card.scss',
 })

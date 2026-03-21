@@ -6,6 +6,10 @@ import { MisDatos } from './layout/pages/mis-datos/mis-datos';
 
 export const routes: Routes = [
   { path: 'eventos', component: MainPageEvents },
+  {
+    path: 'eventos/:slug',
+    loadComponent: () => import('./layout/pages/event-detail/event-detail').then(m => m.EventDetail),
+  },
   { path: 'registro', component: Register },
   { path: 'login', component: Login },
   { path: 'mis-datos', component: MisDatos },
