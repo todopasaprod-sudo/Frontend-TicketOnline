@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Navbar } from '../../components/navbar/navbar';
 import { EventService, EventDetailDto, TicketTypeDto } from '../../../core/events/event.service';
 import { PurchaseModal } from './purchase-modal/purchase-modal';
+import type { CartItem } from './purchase-modal/purchase-modal';
 
 const CATEGORY_GRADIENTS: Record<string, string> = {
   'Música': 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)',
@@ -15,7 +16,6 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   'Infantil': 'linear-gradient(135deg, #5b21b6 0%, #a855f7 100%)',
 };
 const DEFAULT_GRADIENT = 'linear-gradient(135deg, #0f4c75 0%, #1b6ca8 100%)';
-const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 @Component({
@@ -33,9 +33,26 @@ export class EventDetail {
   event = signal<EventDetailDto | null>(null);
 
   quantities = signal<Record<string, number>>({});
-  modalTicketType = signal<TicketTypeDto | null>(null);
-  modalQuantity = signal(0);
-  modalOpen = computed(() => this.modalTicketType() !== null);
+  qtyDropdownOpen = signal<Record<string, boolean>>({});
+  modalOpen = signal(false);
+
+  cartItems = computed<CartItem[]>(() => {
+    const evt = this.event();
+    if (!evt) return [];
+    return evt.ticketTypes
+      .filter(tt => (this.quantities()[tt.id] ?? 0) > 0)
+      .map(tt => ({ ticketType: tt, quantity: this.quantities()[tt.id] }));
+  });
+
+  totalItems = computed(() => Object.values(this.quantities()).reduce((a, b) => a + b, 0));
+
+  cartSubtotal = computed(() =>
+    this.cartItems().reduce((sum, item) => sum + item.ticketType.price * item.quantity, 0)
+  );
+  cartTotal = computed(() => {
+    const sub = this.cartSubtotal();
+    return sub + Math.round(sub * 0.15);
+  });
 
   gradient = computed(() => {
     const e = this.event();
@@ -85,39 +102,38 @@ export class EventDetail {
     return Math.min(tt.maxPerOrder, 5, avail);
   }
 
-  increaseQty(tt: TicketTypeDto): void {
-    const current = this.getQty(tt.id);
+  qtyOptions(tt: TicketTypeDto): number[] {
     const max = this.getMaxQty(tt);
-    if (current >= max) return;
-    const next = current + 1;
-    this.quantities.update(q => ({ ...q, [tt.id]: next }));
-    if (next === 1) {
-      this.modalTicketType.set(tt);
-      this.modalQuantity.set(next);
-    } else {
-      this.modalQuantity.set(next);
+    return Array.from({ length: max }, (_, i) => i + 1);
+  }
+
+  isQtyOpen(id: string): boolean {
+    return this.qtyDropdownOpen()[id] ?? false;
+  }
+
+  toggleQtyDropdown(id: string): void {
+    this.qtyDropdownOpen.update(s => ({ ...s, [id]: !s[id] }));
+  }
+
+  closeQtyDropdown(id: string): void {
+    this.qtyDropdownOpen.update(s => ({ ...s, [id]: false }));
+  }
+
+  setQty(tt: TicketTypeDto, qty: number): void {
+    this.quantities.update(q => ({ ...q, [tt.id]: qty }));
+    this.closeQtyDropdown(tt.id);
+    if (qty > 0) {
+      this.modalOpen.set(true);
     }
   }
 
-  decreaseQty(tt: TicketTypeDto): void {
-    const current = this.getQty(tt.id);
-    if (current <= 0) return;
-    const next = current - 1;
-    this.quantities.update(q => ({ ...q, [tt.id]: next }));
-    if (next === 0) {
-      this.modalTicketType.set(null);
-    } else {
-      this.modalQuantity.set(next);
-    }
+  openCart(): void {
+    this.modalOpen.set(true);
   }
 
   closeModal(): void {
-    const tt = this.modalTicketType();
-    if (tt) {
-      this.quantities.update(q => ({ ...q, [tt.id]: 0 }));
-    }
-    this.modalTicketType.set(null);
-    this.modalQuantity.set(0);
+    this.modalOpen.set(false);
+    // quantities are preserved — user can keep adding types or reopen the cart
   }
 
   formatPrice(price: number): string {

@@ -33,16 +33,18 @@
       @if (currentStep() === 1) {
         <div class="purchase-modal__step">
 
-          <div class="order-ticket">
-            <div class="order-ticket__dot" [style.background]="'linear-gradient(135deg,#7c3aed,#2563eb)'"></div>
-            <div class="order-ticket__info">
-              <span class="order-ticket__name">{{ ticketType().name }}</span>
-              @if (ticketType().badge) {
-                <span class="order-ticket__badge">{{ ticketType().badge }}</span>
-              }
+          @for (item of cartItems(); track item.ticketType.id) {
+            <div class="order-ticket">
+              <div class="order-ticket__dot" [style.background]="'linear-gradient(135deg,#7c3aed,#2563eb)'"></div>
+              <div class="order-ticket__info">
+                <span class="order-ticket__name">{{ item.quantity }} × {{ item.ticketType.name }}</span>
+                @if (item.ticketType.badge) {
+                  <span class="order-ticket__badge">{{ item.ticketType.badge }}</span>
+                }
+              </div>
+              <span class="order-ticket__price">{{ formatPrice(item.ticketType.price * item.quantity) }}</span>
             </div>
-            <span class="order-ticket__price">{{ formatPrice(ticketType().price) }}</span>
-          </div>
+          }
 
           <!-- Discount code -->
           <div class="discount-section">
@@ -61,14 +63,12 @@
           <!-- Price breakdown -->
           <div class="price-breakdown">
             <div class="price-breakdown__divider"></div>
-            <div class="price-breakdown__row">
-              <span>Costo de entradas:</span>
-              <span></span>
-            </div>
-            <div class="price-breakdown__row price-breakdown__row--sub">
-              <span>{{ quantity() }} x {{ ticketType().name }}</span>
-              <span>{{ formatPrice(subtotal()) }}</span>
-            </div>
+            @for (item of cartItems(); track item.ticketType.id) {
+              <div class="price-breakdown__row price-breakdown__row--sub">
+                <span>{{ item.quantity }} x {{ item.ticketType.name }}</span>
+                <span>{{ formatPrice(item.ticketType.price * item.quantity) }}</span>
+              </div>
+            }
             <div class="price-breakdown__row">
               <span>Costo del servicio:</span>
               <span>{{ formatPrice(serviceFee()) }}</span>
@@ -175,11 +175,13 @@
           </div>
 
           <div class="confirm-tickets">
-            <p class="confirm-tickets__title">Tus entradas</p>
-            <div class="confirm-tickets__row">
-              <span>{{ quantity() }} x {{ ticketType().name }}</span>
-              <span>{{ formatPrice(subtotal()) }}</span>
-            </div>
+            <p class="confirm-tickets__title">Tus entradas ({{ totalItems() }})</p>
+            @for (item of cartItems(); track item.ticketType.id) {
+              <div class="confirm-tickets__row">
+                <span>{{ item.quantity }} x {{ item.ticketType.name }}</span>
+                <span>{{ formatPrice(item.ticketType.price * item.quantity) }}</span>
+              </div>
+            }
             <div class="confirm-tickets__breakdown">
               <div class="price-breakdown__row">
                 <span>Costo total de entradas:</span>

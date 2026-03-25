@@ -5,6 +5,11 @@ import { EventDetailDto, TicketTypeDto } from '../../../../core/events/event.ser
 import { AuthService } from '../../../../core/auth/auth.service';
 import { UserService } from '../../../../core/users/user.service';
 
+export interface CartItem {
+  ticketType: TicketTypeDto;
+  quantity: number;
+}
+
 const IDENTIFICATION_TYPES = ['DNI', 'CUIT', 'Pasaporte', 'CE'];
 const COUNTRIES = ['Argentina', 'Uruguay', 'Chile', 'Brasil', 'Paraguay', 'Bolivia', 'Perú', 'Colombia', 'México', 'España', 'Otro'];
 
@@ -26,8 +31,7 @@ export class PurchaseModal {
   private userService = inject(UserService);
 
   event = input.required<EventDetailDto>();
-  ticketType = input.required<TicketTypeDto>();
-  quantity = input.required<number>();
+  cartItems = input.required<CartItem[]>();
   close = output<void>();
 
   currentStep = signal(1);
@@ -39,9 +43,12 @@ export class PurchaseModal {
   readonly identificationTypes = IDENTIFICATION_TYPES;
   readonly countries = COUNTRIES;
 
-  subtotal = computed(() => this.ticketType().price * this.quantity());
+  subtotal = computed(() =>
+    this.cartItems().reduce((sum, item) => sum + item.ticketType.price * item.quantity, 0)
+  );
   serviceFee = computed(() => Math.round(this.subtotal() * 0.15));
   total = computed(() => this.subtotal() + this.serviceFee());
+  totalItems = computed(() => this.cartItems().reduce((sum, item) => sum + item.quantity, 0));
 
   buyerForm: FormGroup;
 

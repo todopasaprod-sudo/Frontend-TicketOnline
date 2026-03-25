@@ -13,6 +13,33 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
   return null;
 }
 
+function strongPasswordValidator(control: AbstractControl): ValidationErrors | null {
+  const value: string = control.value ?? '';
+  const errors: ValidationErrors = {};
+  if (!/[A-Z]/.test(value)) errors['noUppercase'] = true;
+  if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~]/.test(value)) errors['noSpecialChar'] = true;
+  return Object.keys(errors).length ? errors : null;
+}
+
+function strictEmailValidator(control: AbstractControl): ValidationErrors | null {
+  const value: string = control.value ?? '';
+  const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})*$/;
+  return emailRegex.test(value) ? null : { invalidEmail: true };
+}
+
+function minAgeValidator(minAge: number) {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) return null;
+    const birthDate = new Date(value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+    return age < minAge ? { minAge: true } : null;
+  };
+}
+
 @Component({
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink],
@@ -70,17 +97,17 @@ export class Register {
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'\-]{2,}$/)]],
+      lastName: ['', [Validators.required, Validators.minLength(2), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'\-]{2,}$/)]],
+      email: ['', [Validators.required, strictEmailValidator]],
       identificationType: ['', Validators.required],
-      identificationValue: ['', Validators.required],
+      identificationValue: ['', [Validators.required, Validators.pattern(/^\d{6,12}$/)]],
       phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-]{8,15}$/)]],
-      dateOfBirth: ['', Validators.required],
+      dateOfBirth: ['', [Validators.required, minAgeValidator(18)]],
       gender: ['', Validators.required],
-      country: ['', Validators.required],
-      province: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      country: ['', [Validators.required, Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'\-]{2,}$/)]],
+      province: ['', [Validators.required, Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'\-]{2,}$/)]],
+      password: ['', [Validators.required, Validators.minLength(8), strongPasswordValidator]],
       confirmPassword: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
     }, { validators: passwordMatchValidator });

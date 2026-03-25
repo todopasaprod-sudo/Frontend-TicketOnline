@@ -76,14 +76,22 @@
             <label for="firstName">Nombre</label>
             <input id="firstName" type="text" formControlName="firstName" placeholder="Juan" autocomplete="given-name"/>
             @if (isInvalid('firstName')) {
-              <span class="field__error">Ingresa tu nombre (mín. 2 caracteres)</span>
+              @if (getControl('firstName')?.errors?.['pattern']) {
+                <span class="field__error">Solo puede contener letras y espacios</span>
+              } @else {
+                <span class="field__error">Ingresa tu nombre (mín. 2 caracteres)</span>
+              }
             }
           </div>
           <div class="field" [class.field--error]="isInvalid('lastName')">
             <label for="lastName">Apellido</label>
             <input id="lastName" type="text" formControlName="lastName" placeholder="Pérez" autocomplete="family-name"/>
             @if (isInvalid('lastName')) {
-              <span class="field__error">Ingresa tu apellido (mín. 2 caracteres)</span>
+              @if (getControl('lastName')?.errors?.['pattern']) {
+                <span class="field__error">Solo puede contener letras y espacios</span>
+              } @else {
+                <span class="field__error">Ingresa tu apellido (mín. 2 caracteres)</span>
+              }
             }
           </div>
         </div>
@@ -92,7 +100,7 @@
           <label for="email">Email</label>
           <input id="email" type="email" formControlName="email" placeholder="juan@ejemplo.com" autocomplete="email"/>
           @if (isInvalid('email')) {
-            <span class="field__error">Ingresa un email válido</span>
+            <span class="field__error">Ingresá un email válido (ej: usuario@dominio.com)</span>
           }
         </div>
 
@@ -137,7 +145,7 @@
             <label for="identificationValue">Número de documento</label>
             <input id="identificationValue" type="text" formControlName="identificationValue" placeholder="12345678"/>
             @if (isInvalid('identificationValue')) {
-              <span class="field__error">Ingresá tu número de documento</span>
+              <span class="field__error">Ingresá un número de documento válido (solo dígitos, 6-12 caracteres)</span>
             }
           </div>
         </div>
@@ -154,7 +162,11 @@
             <label for="dateOfBirth">Fecha de nacimiento</label>
             <input id="dateOfBirth" type="date" formControlName="dateOfBirth"/>
             @if (isInvalid('dateOfBirth')) {
-              <span class="field__error">Ingresá tu fecha de nacimiento</span>
+              @if (getControl('dateOfBirth')?.errors?.['minAge']) {
+                <span class="field__error">Debés tener al menos 18 años para registrarte</span>
+              } @else {
+                <span class="field__error">Ingresá tu fecha de nacimiento</span>
+              }
             }
           </div>
         </div>
@@ -200,7 +212,11 @@
             <label for="country">País</label>
             <input id="country" type="text" formControlName="country" placeholder="Argentina"/>
             @if (isInvalid('country')) {
-              <span class="field__error">Ingresá tu país</span>
+              @if (getControl('country')?.errors?.['pattern']) {
+                <span class="field__error">Solo puede contener letras y espacios</span>
+              } @else {
+                <span class="field__error">Ingresá tu país</span>
+              }
             }
           </div>
         </div>
@@ -209,7 +225,11 @@
           <label for="province">Provincia / Estado</label>
           <input id="province" type="text" formControlName="province" placeholder="Buenos Aires"/>
           @if (isInvalid('province')) {
-            <span class="field__error">Ingresá tu provincia o estado</span>
+            @if (getControl('province')?.errors?.['pattern']) {
+              <span class="field__error">Solo puede contener letras y espacios</span>
+            } @else {
+              <span class="field__error">Ingresá tu provincia o estado</span>
+            }
           }
         </div>
 
@@ -234,7 +254,15 @@
             </button>
           </div>
           @if (isInvalid('password')) {
-            <span class="field__error">La contraseña debe tener al menos 8 caracteres</span>
+            @if (getControl('password')?.errors?.['minlength']) {
+              <span class="field__error">La contraseña debe tener al menos 8 caracteres</span>
+            } @else if (getControl('password')?.errors?.['noUppercase']) {
+              <span class="field__error">La contraseña debe tener al menos una letra mayúscula</span>
+            } @else if (getControl('password')?.errors?.['noSpecialChar']) {
+              <span class="field__error">La contraseña debe tener al menos un carácter especial (!@#$%...)</span>
+            } @else {
+              <span class="field__error">La contraseña es requerida</span>
+            }
           }
         </div>
 
