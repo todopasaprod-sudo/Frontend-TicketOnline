@@ -13,10 +13,15 @@
           <span class="purchase-step__num">@if (currentStep() > 2) { ✓ } @else { 2 }</span>
           <span class="purchase-step__label">Ingresa tus datos</span>
         </div>
-        <div class="purchase-steps__line" [class.purchase-steps__line--done]="currentStep() > 2"></div>
-        <div class="purchase-step" [class.purchase-step--active]="currentStep() >= 3">
-          <span class="purchase-step__num">3</span>
+        <div class="purchase-steps__line" [class.purchase-steps__line--done]="currentStep() > 3"></div>
+        <div class="purchase-step" [class.purchase-step--active]="currentStep() >= 3" [class.purchase-step--done]="currentStep() > 3">
+          <span class="purchase-step__num">@if (currentStep() > 3) { ✓ } @else { 3 }</span>
           <span class="purchase-step__label">Confirma tu compra</span>
+        </div>
+        <div class="purchase-steps__line" [class.purchase-steps__line--done]="currentStep() >= 4"></div>
+        <div class="purchase-step" [class.purchase-step--active]="currentStep() >= 4">
+          <span class="purchase-step__num">4</span>
+          <span class="purchase-step__label">Pago</span>
         </div>
       </div>
       <button class="purchase-modal__close" (click)="onClose()">
@@ -146,7 +151,7 @@
         </form>
       }
 
-      <!-- ── STEP 3: Confirm + payment ────────────────────────────────── -->
+      <!-- ── STEP 3: Confirm + payment method ────────────────────────────── -->
       @if (currentStep() === 3) {
         <div class="purchase-modal__step">
           <p class="confirm-title">¡Ya casi es tuyo! Revisa tus datos</p>
@@ -235,21 +240,101 @@
         </div>
       }
 
+      <!-- ── STEP 4: Payment form (MercadoPago Card Brick) ───────────────── -->
+      @if (currentStep() === 4) {
+        <div class="purchase-modal__step">
+
+          @if (!paymentResult() && !isProcessingPayment()) {
+            <!-- Card Brick renders into this div -->
+            <div id="cardPayment-container"></div>
+
+            @if (paymentError()) {
+              <p class="payment-error">{{ paymentError() }}</p>
+            }
+          }
+
+          @if (isProcessingPayment()) {
+            <div class="payment-processing">
+              <div class="payment-processing__spinner"></div>
+              <p class="payment-processing__text">Procesando tu pago...</p>
+            </div>
+          }
+
+          @if (paymentResult()) {
+
+            @if (paymentResult()!.paymentStatus === 'approved') {
+              <div class="payment-result payment-result--success">
+                <div class="payment-result__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M20 6 9 17l-5-5"/>
+                  </svg>
+                </div>
+                <h3 class="payment-result__title">¡Pago aprobado!</h3>
+                <p class="payment-result__msg">
+                  Vas a recibir tus entradas en
+                  <strong>{{ buyerForm.get('email')?.value }}</strong>.
+                </p>
+                <p class="payment-result__ref">Referencia: {{ paymentResult()!.orderId }}</p>
+                <button class="purchase-btn purchase-btn--primary" (click)="onClose()">Listo</button>
+              </div>
+            }
+
+            @if (paymentResult()!.paymentStatus === 'pending') {
+              <div class="payment-result payment-result--pending">
+                <div class="payment-result__icon payment-result__icon--pending">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                  </svg>
+                </div>
+                <h3 class="payment-result__title">Pago en proceso</h3>
+                <p class="payment-result__msg">
+                  Tu pago está siendo procesado. Te notificaremos por email cuando se confirme.
+                </p>
+                <p class="payment-result__ref">Referencia: {{ paymentResult()!.orderId }}</p>
+                <button class="purchase-btn purchase-btn--primary" (click)="onClose()">Entendido</button>
+              </div>
+            }
+
+            @if (paymentResult()!.paymentStatus === 'rejected') {
+              <div class="payment-result payment-result--error">
+                <div class="payment-result__icon payment-result__icon--error">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M15 9l-6 6M9 9l6 6"/>
+                  </svg>
+                </div>
+                <h3 class="payment-result__title">Pago rechazado</h3>
+                <p class="payment-result__msg">
+                  {{ paymentResult()!.statusDetail ?? 'Revisá los datos de tu tarjeta e intentá de nuevo.' }}
+                </p>
+                <button class="purchase-btn purchase-btn--ghost" (click)="retryPayment()">Reintentar</button>
+              </div>
+            }
+
+          }
+
+        </div>
+      }
+
     </div>
 
     <!-- Footer: navigation buttons -->
     <div class="purchase-modal__footer">
-      @if (currentStep() > 1) {
+      @if (currentStep() > 1 && currentStep() < 4) {
         <button class="purchase-btn purchase-btn--ghost" (click)="prevStep()">Anterior</button>
+      } @else if (currentStep() === 1) {
+        <span></span>
       } @else {
         <span></span>
       }
 
       @if (currentStep() < 3) {
         <button class="purchase-btn purchase-btn--primary" (click)="nextStep()">Siguiente</button>
-      } @else {
+      } @else if (currentStep() === 3) {
         <button class="purchase-btn purchase-btn--primary"
-                [disabled]="!selectedPayment()">
+                [disabled]="!selectedPayment()"
+                (click)="confirmAndPay()">
           Confirmar y pagar
         </button>
       }

@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(powershell -ExecutionPolicy Bypass -File \"recolor.ps1\")"
+      "Bash(powershell -ExecutionPolicy Bypass -File \"recolor.ps1\")",
+      "WebSearch"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Fede\\Desktop\\Ticketera\\BACKEND MONOLITO\\ticketingapp-main\\TicketingApp.Application\\Settings"
     ]
   }
 }
